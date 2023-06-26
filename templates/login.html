@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Log In Page</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/stylesheet2.css') }}">
+    </head>
+    <body>
+        <form action="{{ url_for('login') }}" method="POST">
+            <h1>Log in</h1>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <p style="color:red;">{{ messages[0] }}</p>
+                {% endif %}
+            {% endwith %}
+            <!-- <label for="username">Username</label> -->
+            <input type="text" class="input_box" id="username" name="username" minlength="4"
+             maxlength="8" size="10" placeholder="Username" required>
+            <!-- <label for="password">Password</label> -->
+            <input type="text" class="input_box" id="password" name="password" minlength="4" maxlength="8" size="10" placeholder="password" required>
+            <button type="submit">Log In</button>
+        </form>
+    </body>
+</html>

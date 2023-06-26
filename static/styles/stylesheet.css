@@ -1,0 +1,23 @@
+.action-container{
+    display: flex;
+    background-color: aliceblue;
+    width: 50%;
+    height: 200px;
+    justify-content: center;
+}
+
+.work-status-change-button{
+    height: 100px;
+}
+
+.error{
+    color: red;
+}
+
+.success{
+    color: green;
+}
+
+.input-error{
+    border: 1px solid red;
+}

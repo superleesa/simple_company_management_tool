@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Admin - Add User</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/admin_add_user.css')}}">
+        <script>
+            const verifyPassword = () => {
+                const password1 = document.getElementById("password1").value;
+                const password2Field = document.getElementById("password2");
+                const password2 = password2Field.value;
+
+                if (password1 !== password2){
+                    password2Field.classList.add("input-error");
+                    console.log("error")
+                }else{
+                    password2Field.classList.remove("input-error");
+                }
+
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Add User</h1>
+        <!-- add conditions for username and password -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('.add_user') }}" method="POST">
+            <label for="username">Username</label>
+            <input type="text" class="input_box" id="username" name="username" minlength="4" maxlength="8" size="10">
+            <label for="password1">Password</label>
+            <input type="text" class="input_box" id="password1" name="password1" minlength="4" maxlength="8" size="10">
+
+            <label for="password2">Type the password again</label>
+            <input type="text" class="input_box" id="password2" name="password2" minlength="4" maxlength="8" size="10" oninput="verifyPassword()">
+
+            <label for="first-name">First Name</label>
+            <input type="text" class="input_box" id="first-name" name="first-name" minlength="1" maxlength="20" size="15">
+            <label for="last-name">Last Name</label>
+            <input type="text" class="input_box" id="last-name" name="last-name" minlength="1" maxlength="20" size="15">
+            <label for="last-name">Register as an administrator</label>
+            <input type="checkbox" class="input_box" id="is_admin" name="id_admin">
+            <button type="submit">Add User</button>
+        </form>
+    </body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Log In Page</title>
+    </head>
+    <body>
+        <h1>Sign In</h1>
+        <!-- add conditions for username and password -->
+        <form action="{{ url_for('login') }}" method="POST">
+            <label for="username">Username</label>
+            <input type="text" class="input_box" id="username" name="username" minlength="4" maxlength="8" size="10">
+            <label for="password">Password</label>
+            <input type="text" class="input_box" id="password" name="password" minlength="4" maxlength="8" size="10">
+            <button type="submit">Log In</button>
+        </form>
+    </body>
+</html>

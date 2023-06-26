@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Title</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/stylesheet3.css') }}">
+        <script>
+
+        </script>
+    </head>
+    <body>
+        <h1>Search Users</h1>
+        <div id="search-section-wrapper">
+            <div id="search-tabs">
+                <div class="search-tab">Usernames</div>
+                <div class="search-tab">Name</div>
+            </div>
+            <div id="input-wrapper">
+                <input type="text" id="search-input" placeholder="Search...">
+            </div>
+                <div id="filters-box">
+                    <p>Filters</p>
+                    <div id="work-status-filter">
+                    <button class="work-status-button">All</button>
+                    <button class="work-status-button">Working</button>
+                    <button class="work-status-button">Not Working</button>
+                </div>
+            </div>
+        </div>
+        <table>
+            <tr>
+                <th>User</th>
+                <th>Status</th>
+                <th>Email Address</th>
+                <th>Show details</th>
+            </tr>
+            {% for user in users %}
+                <tr>
+                    <th>{{ user.first_name }} {{user.last_name}}</th>
+                    <th>{{ "Active" if user.is_working else "Inactive"}}</th>
+                    <th>{{ user.email_address }}</th>
+                </tr>
+
+            {% endfor %}
+        </table>
+    </body>
+
+</html>

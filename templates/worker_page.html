@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Worker's Page</title>
+        <script>
+            function recordClickDateTime(elementId){
+                console.log("hello brooooooooos")
+                const currentDateTime = new Date().toJSON().slice(0, 19);
+                console.log("hello ===============")
+                console.log(currentDateTime);
+                console.log(document.getElementById(elementId));
+                document.getElementById(elementId).value = currentDateTime;  
+            }
+        </script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/stylesheet.css') }}">
+    </head>
+    <body>
+        <h2>Good Morning {{ current_user.first_name }}!</h2>
+
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        {% if has_started_work %}
+        <div class="action-container">
+            <h2 class="work-status-change-button-text">Finish Today's Work</h2>
+            <form action="{{ url_for('finish_work')}}" method="POST">
+                <input type="hidden" id="end-work" name="end-datetime" value="">
+                <button type="submit" onclick="recordClickDateTime('end-work')" class="work-status-change-button">Finish</button>
+            </form>
+        </div>
+        <div class="action-container">
+            <h2 class="work-status-change-button-text">Cancel Today's Work</h2>
+            <form action="{{ url_for('cancel_work')}}" method="POST">
+                <button type="submit" class="work-status-change-button">Cancel</button>
+            </form>
+        </div>
+
+        {% else %}
+        <div class="action-container">
+            <h2 class="work-status-change-button-text">Start Today's Work</h2>
+            <form action="{{ url_for('start_work')}}" method="POST">
+                <input type="hidden" id="start-work" name="start-datetime" value="">
+                <button type="submit" onclick="recordClickDateTime('start-work')" class="work-status-change-button">Start</button>
+            </form>
+        </div>
+        {% endif %}
+    </body>
+</html>
