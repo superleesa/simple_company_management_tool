@@ -4,74 +4,59 @@ from flask import (
     request,
     redirect,
     render_template,
-    flash
+    flash,
+    abort
 )
 
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy import desc
+from datetime import datetime
+
+
 from config import login_manager, Session
 from models import User, Work
 
-employee_page = Blueprint("employee", __name__, template_folder="templates")
+employee_page = Blueprint("employee", __name__)
 
 
-#TODO add is_working attribute
-
-@employee_page.route("/worker_page", methods=["GET"])
+@employee_page.route("/", methods=["GET"])
 @login_required
-def worker_page():
-    
-    # access the database and check if the start datetime is records
+def index():
     user_id = current_user.id
-    session = Session()
-    
-    query = (session.query(Work.end_datetime)
-                        .filter(Work.user_id == user_id)
-                        .order_by(desc(Work.start_datetime)).all())
-    session.close()
-    
-    print(query)
-    if len(query) == 0:
-        has_started_todays_work = False
-    else:
-        has_started_todays_work = query[0].end_datetime is None
-        
-    
-    return render_template("worker_page.html", has_started_work=has_started_todays_work)
+    has_started_work_today = check_employee_is_working(user_id)
+
+    return render_template("worker_page.html", has_started_work=has_started_work_today)
 
 @employee_page.route("/start_work", methods=["POST"])
 @login_required
 def start_work():
     user_id = current_user.id
-    session = Session()
+
     
-    # TODO check the worker has not started todays work
-    query = (session.query(Work.end_datetime)
-                        .filter(Work.user_id == user_id)
-                        .order_by(desc(Work.start_datetime)).all())
+    has_started_work_today = check_employee_is_working(user_id)
     
-    
-    if len(query) == 0:
-        has_started_todays_work = False
-    else:
-        has_started_todays_work = query[0].end_datetime is None
-    
-    if has_started_todays_work:
+    if has_started_work_today:
         flash("Have an ongoing work already", "error")
-        session.close()
-        return redirect(url_for("worker_page"))
+        return redirect(url_for(".index"))
     
-    
+    # inserting new work record
     start_datetime = datetime.strptime(request.form["start-datetime"], "%Y-%m-%dT%H:%M:%S")
-    # parse this into date object somehow
-    
+    session = Session()
     session.add(Work(user_id=user_id, start_datetime=start_datetime))
+    session.commit()
+
+    # updating the work status
+    user_record = session.query(User).filter(User.id == user_id).first()
+    if user_record:
+        user_record.is_working = True
+    else:
+        abort(500, "This user is not registered.")
     session.commit()
     session.close()
     
     # redirect to the worker page
     flash("Started Today's Work", "success")
-    return redirect(url_for("worker_page"))
+    return redirect(url_for(".index"))
     
 @employee_page.route("/cancel_work", methods=["POST"])
 @login_required
@@ -79,53 +64,80 @@ def cancel_work():
     # can only cancel if checked in already
     
     # TODO add "are you sure pop up box"
-    
+
+    # check user has started a job
     user_id = current_user.id
+    has_started_work_today = check_employee_is_working(user_id)
+    if not has_started_work_today:
+        flash("Have not yet started today's work", "error")
+        return redirect(url_for(".index"))
+
+    # get the latest work
     session = Session()
-    res = session.query(Work.end_datetime, Work.id).filter(Work.user_id == user_id).order_by(desc(Work.start_datetime)).first()
-    if res is None:
-        has_started_todays_work = False
+    work_record = session.query(Work).filter(Work.user_id == user_id).order_by(desc(Work.start_datetime)).first()
+    if work_record is None:
+        abort(500, "You tried to cancel a work, but has not started working yet")
+    session.delete(work_record)
+    session.commit()
+
+    # update the user working status
+    user_record = session.query(User).filter(User.id == user_id).first()
+    if user_record:
+        user_record.is_working = False
     else:
-        last_work_end_datetime, last_work_id = res[0], res[1]
-        has_started_todays_work =  last_work_end_datetime is None
-        
-    if has_started_todays_work:
-        
-        session.query(Work).filter(Work.id == last_work_id).delete()
-        session.commit()
-        session.close()
-        flash("Work canceled", "success")
-        return redirect(url_for("worker_page"))
-    
-    
-    flash("Have not yet started today's work", "error")
+        abort(404, "This user is not registered.")
+    session.commit()
     session.close()
-    return redirect(url_for("worker_page"))
+    flash("Work canceled", "success")
+    return redirect(url_for(".index"))
+
 
 @employee_page.route("/finish_work", methods=["POST"])
 @login_required
 def finish_work():
     # TODO add "are you sure pop up box"
-    
+
+    # TODO update is_working status
+    # check the user has started to work
     user_id = current_user.id
-    print(user_id)
+    has_started_work_today = check_employee_is_working(user_id)
+    if not has_started_work_today:
+        flash("Have not yet started today's work", "error")
+        return redirect(url_for(".index"))
+
+    # add the end_datetime value to the corresponding work record
     session = Session()
-    res = session.query(Work).filter(Work.user_id == user_id).order_by(desc(Work.start_datetime)).first()
-    if res is None:
-        has_started_todays_work = False
+    work_record = session.query(Work).filter(Work.user_id == user_id).order_by(desc(Work.start_datetime)).first()
+    if work_record is None:
+        abort(404, "User has not started work yet")
+    end_datetime = datetime.strptime(request.form["end-datetime"], "%Y-%m-%dT%H:%M:%S")
+    work_record.end_datetime = end_datetime
+    session.commit()
+
+    # update the user working status
+    user_record = session.query(User).filter(User.id == user_id).first()
+    if user_record:
+        user_record.is_working = False
     else:
-        last_work_end_datetime = res.end_datetime
-        has_started_todays_work =  last_work_end_datetime is None
-        
-    if has_started_todays_work:
-        end_datetime = datetime.strptime(request.form["end-datetime"], "%Y-%m-%dT%H:%M:%S")
-        res.end_datetime = end_datetime
-        session.commit()
-        session.close()
-        flash("Finished today's work", "success")
-        return redirect(url_for("worker_page"))
-    
-    # todo flash message
+        abort(404, "This user is not registered.")
+
+    session.commit()
     session.close()
-    flash("Have not yet started today's work", "error")
-    return redirect(url_for("worker_page"))
+
+    flash("Finished today's work", "success")
+    return redirect(url_for(".index"))
+
+def check_employee_is_working(user_id: int):
+    session = Session()
+
+    try:
+        user_record = session.query(User.is_working).filter(User.id == user_id).first()
+        is_working = user_record[0]
+    except:
+        session.close()
+        abort(404, "This user is not registered")
+
+
+    session.close()
+    return is_working
+

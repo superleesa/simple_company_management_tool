@@ -6,7 +6,7 @@ from flask_login import UserMixin
 from models import Base
 
 class User(Base, UserMixin):
-    __tablename__ = "employee_table"
+    __tablename__ = "user_table"
     __table_args__ = (UniqueConstraint("username"),)
     
     id = Column(Integer, primary_key=True)
