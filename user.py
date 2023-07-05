@@ -1,6 +1,4 @@
 from sqlalchemy import Column, Integer, String, UniqueConstraint, Boolean
-from sqlalchemy.ext.declarative import declarative_base
-
 from flask_login import UserMixin
 
 from models import Base

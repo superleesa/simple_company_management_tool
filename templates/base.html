@@ -2,9 +2,113 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{% block title %}{% endblock %}</title>
+    {% block stylesheet %}{% endblock %}
 </head>
 <body>
+    <header>
+
+        <!-- the left end of the header -->
+        <div id="logo">Logo</div>
+        <div id="nav-var">
+            <div class="header-end" id="header-left-end">
+                {% block header_left %}{% endblock %}
+            </div>
+
+        <!-- the right end of the header -->
+            <div class="header-end" id="header-right-end">
+                {% block header_right %}{% endblock %}
+                <div class="dropdown">
+                    <button class="dropdown-button">User A</button>
+                    <ul class="dropdown-content align-right">
+                        <li><a href="#">Log Out</a></li>
+                        <li><a href="#">Setting</a></li>
+                        <li><a href="#">Another Menu</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    {% block body %}{% endblock %}
 
 </body>
+<style>
+    body{
+        margin: 0;
+        position: relative;
+    }
+    header {
+        background-color: #f1f1f1;
+        padding: 15px;
+        display: flex;
+        gap: 20px;
+    }
+
+    #nav-var{
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .header-end{
+        display: flex;
+        gap: 10px;
+    }
+
+    #logo {
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    .dropdown-content{
+        display: none;
+        position: absolute;
+
+
+        border: 1px solid #858585;
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+        width: max-content;
+        list-style-type: none;
+        {#box-shadow: var(--shadow-02);#}
+    }
+
+    .align-left{
+        top: 30px;
+        left: 0px;
+    }
+
+    .dropdown{
+        display: flex;
+        align-items: center;
+        position: relative;
+        border-radius: 2px;
+    }
+
+    .dropdown-button{
+        position: relative;
+        background-color: transparent;
+        border: 0;
+        font-size: 20px;
+    }
+
+    .dropdown:hover .dropdown-content{
+        display:flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .dropdown:hover{
+        background-color: #dcdcdc;
+    }
+
+    .align-right{
+        text-align: right;
+        top: 30px;
+        right: 0;
+    }
+
+
+</style>
 </html>
