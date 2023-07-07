@@ -1,31 +1,19 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Title</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles/stylesheet3.css') }}">
-        <script>
-
-        </script>
-    </head>
-    <body>
-        <h1>Search Users</h1>
-        <div id="search-section-wrapper">
-            <div id="search-tabs">
-                <div class="search-tab">Usernames</div>
-                <div class="search-tab">Name</div>
-            </div>
-            <div id="input-wrapper">
-                <input type="text" id="search-input" placeholder="Search...">
-            </div>
-                <div id="filters-box">
-                    <p>Filters</p>
-                    <div id="work-status-filter">
-                    <button class="work-status-button">All</button>
-                    <button class="work-status-button">Working</button>
-                    <button class="work-status-button">Not Working</button>
-                </div>
-            </div>
+{% extends "admin_base.html" %}
+{% block title %}Show Users{% endblock %}
+{% block stylesheet %}<link rel="stylesheet" href="{{ url_for('static', filename='styles/stylesheet3.css') }}">{% endblock %}
+{% block body %}
+    <div id="main">
+        <div id="page-title-with-search-bar">
+            <h3>Search Users</h3>
+            <input type="text" id="search-input" placeholder="Search...">
+            <button>Add User</button>
         </div>
+
+        <div id="working-status-filter">
+            <button id="working-selector" class="work-filter-button">Working</button>
+            <button id="not-working-selector" class="work-filter-button">Not Working</button>
+        </div>
+
         <table>
             <tr>
                 <th>User</th>
@@ -35,13 +23,71 @@
             </tr>
             {% for user in users %}
                 <tr>
-                    <th>{{ user.first_name }} {{user.last_name}}</th>
-                    <th>{{ "Active" if user.is_working else "Inactive"}}</th>
-                    <th>{{ user.email_address }}</th>
+                    <th class="username-cell" style="width:300px; text-align: left;">
+                        <img src="{{ url_for('static', filename='images/profile.png') }}" alt="profile image">
+                        <div>
+                            {{ user.first_name }} {{user.last_name}}
+                            <br>
+                            <span style="color: #cccccc; font-size: 5px;">@{{ user.id }}</span>
+                        </div>
+
+                    </th>
+                    <th style="width:100px;">{{ "Active" if user.is_working else "Inactive"}}</th>
+                    <th style="width:100px;">{{ user.email_address }}</th>
                 </tr>
 
             {% endfor %}
         </table>
-    </body>
+    </div>
 
-</html>
+{% endblock %}
+{% block style %}
+    #page-title-with-search-bar{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+    #working-status-filter{
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .work-filter-button{
+        background-color: white;
+        border-radius: 5px;
+        color: grey;
+        border: solid 1px grey;
+        padding: 10px;
+        width: 80px;
+        height: 50px;
+    }
+
+    img {
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+    }
+
+    .username-cell{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    th,td {
+    height: 60px;
+    }
+
+    table {
+        border-collapse:  collapse; /* セルの線を重ねる */
+    }
+
+
+    tr{
+        border-bottom: 1px solid grey;
+    }
+
+{% endblock %}

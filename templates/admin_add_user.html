@@ -36,7 +36,7 @@
     </form>
 {% endblock %}
 
-<script>
+{% block script %}
     const verifyPassword = () => {
         const password1 = document.getElementById("password1").value;
         const password2Field = document.getElementById("password2");
@@ -50,4 +50,11 @@
         }
 
     }
-</script>
+{% endblock %}
+{% block style %}
+    form{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+{% endblock %}

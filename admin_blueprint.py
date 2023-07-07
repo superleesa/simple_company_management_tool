@@ -58,6 +58,9 @@ def add_user():
     return render_template("admin_add_user.html")
 
 
-@admin_page.route("/check_users")
-def check_users():
-    return render_template("check_users.html")
+@admin_page.route("/show_users")
+def show_users():
+    session = Session()
+    users = session.query(User).all()
+    print(users)
+    return render_template("check_users.html", users=users)
