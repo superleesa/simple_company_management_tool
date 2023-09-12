@@ -9,4 +9,3 @@ class Work(Base):
     user_id = Column(ForeignKey("user_table.id"), nullable=False)
     start_datetime = Column(DateTime, nullable=False)
     end_datetime = Column(DateTime)
-    sales = Column(Integer)

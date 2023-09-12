@@ -4,15 +4,13 @@
         <title>Worker's Page</title>
         <script>
             function recordClickDateTime(elementId){
-                console.log("hello brooooooooos")
                 const currentDateTime = new Date().toJSON().slice(0, 19);
-                console.log("hello ===============")
-                console.log(currentDateTime);
-                console.log(document.getElementById(elementId));
                 document.getElementById(elementId).value = currentDateTime;  
             }
         </script>
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/stylesheet.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/dashboard.css') }}">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
     <body>
         <h2>Good Morning {{ current_user.first_name }}!</h2>
@@ -29,27 +27,109 @@
 
         {% if has_started_work %}
         <div class="action-container">
-            <h2 class="work-status-change-button-text">Finish Today's Work</h2>
+{#            <h2 class="work-status-change-button-text">Finish Today's Work</h2>#}
             <form action="{{ url_for('.finish_work')}}" method="POST">
                 <input type="hidden" id="end-work" name="end-datetime" value="">
-                <button type="submit" onclick="recordClickDateTime('end-work')" class="work-status-change-button">Finish</button>
+                <button type="submit" onclick="recordClickDateTime('end-work')" class="work-status-change-button">Finish Today's Work</button>
             </form>
         </div>
         <div class="action-container">
-            <h2 class="work-status-change-button-text">Cancel Today's Work</h2>
+{#            <h2 class="work-status-change-button-text">Cancel Today's Work</h2>#}
             <form action="{{ url_for('.cancel_work')}}" method="POST">
                 <button type="submit" class="work-status-change-button">Cancel</button>
             </form>
         </div>
 
         {% else %}
-        <div class="action-container">
-            <h2 class="work-status-change-button-text">Start Today's Work</h2>
-            <form action="{{ url_for('.start_work')}}" method="POST">
-                <input type="hidden" id="start-work" name="start-datetime" value="">
-                <button type="submit" onclick="recordClickDateTime('start-work')" class="work-status-change-button">Start</button>
-            </form>
-        </div>
+            <div class="actions-container">
+                <h2>Actions</h2>
+                <div class="action-container">
+    {#              <h2 class="work-status-change-button-text">Start Today's Work</h2>#}
+
+                    <form class="action-form" action="{{ url_for('.start_work')}}" method="POST">
+                        <input type="hidden" id="start-work" name="start-datetime" value="">
+                        <button type="submit" onclick="recordClickDateTime('start-work')" class="work-status-change-button"><h3>Start Today's Work</h3></button>
+                    </form>
+                </div>
+            </div>
+
         {% endif %}
+
+    <div class="grid">
+        <div class="cell left"><canvas id="chart1"></canvas></div>
+        <div class="cell right"><canvas id="chart2"></canvas></div>
+        <div class="cell left"><canvas id="chart3"></canvas></div>
+        <div class="cell right"><canvas id="chart4"></canvas></div>
+    </div>
+
     </body>
+
+    <script>
+        const workData = {{ work_data }};
+        const salesData = {{ sales_data }};
+
+        const ctx = document.getElementById('chart1');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3],
+                    borderWidth: 1
+                }]
+                },
+                options: {
+                scales: {
+                    y: {
+                    beginAtZero: true
+                    }
+                }
+                }
+            });
+
+        const ctx2 = document.getElementById('chart2');
+
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                borderWidth: 1
+            }]
+            },
+            options: {
+            scales: {
+                y: {
+                beginAtZero: true
+                }
+            }
+            }
+        });
+
+        const ctx3 = document.getElementById('chart3');
+
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                borderWidth: 1
+            }]
+            },
+            options: {
+            scales: {
+                y: {
+                beginAtZero: true
+                }
+            }
+            }
+        });
+
+    </script>
 </html>

@@ -1,0 +1,32 @@
+    body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+canvas{
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px 10px;
+}
+
+.cell {
+    height: 240px; /* Adjust height as needed */
+
+}
+
+.left{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.right{
+    display: flex;
+    justify-content: flex-start;
+}

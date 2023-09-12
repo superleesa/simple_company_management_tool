@@ -47,7 +47,7 @@ def login():
         if len(list(possible_user)) == 1:
             login_user(possible_user[0])
             # serve user's landing page
-            return redirect(url_for("employee.worker_page"))
+            return redirect(url_for("employee.start_work"))
 
         flash("Incorrect username or pasword")
 

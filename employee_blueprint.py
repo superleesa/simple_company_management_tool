@@ -14,7 +14,7 @@ from datetime import datetime
 
 
 from config import login_manager, Session
-from models import User, Work
+from models import User, Work, Sales
 
 employee_page = Blueprint("employee", __name__)
 
@@ -25,7 +25,18 @@ def index():
     user_id = current_user.id
     has_started_work_today = check_employee_is_working(user_id)
 
-    return render_template("worker_page.html", has_started_work=has_started_work_today)
+    work_data, sales_data = retrieve_past_work_data(current_user.id)
+    print(work_data)
+    print(sales_data)
+
+    print(type(work_data))
+    print(type(work_data[0]))
+    print(type(sales_data))
+
+    return render_template("worker_page.html",
+                           has_started_work=has_started_work_today,
+                           work_data=work_data,
+                           sales_data=sales_data)
 
 @employee_page.route("/start_work", methods=["POST"])
 @login_required
@@ -126,6 +137,26 @@ def finish_work():
 
     flash("Finished today's work", "success")
     return redirect(url_for(".index"))
+
+def retrieve_past_work_data(user_id: int):
+    session = Session()
+
+    try:
+        # work data
+        work_data = session.query(Work.start_datetime, Work.end_datetime).filter(Work.user_id == user_id).all()
+        work_data = [tuple(row) for row in work_data]
+
+        # sales data
+        sales_data = session.query(Sales.amount, Sales.start_datetime, Sales.end_datetime).filter(Sales.manager_id == user_id).all()
+        sales_data = [tuple(row) for row in sales_data]
+
+    except:
+        session.close()
+        abort(404, "This user is not registered")
+
+    return work_data, sales_data
+
+
 
 def check_employee_is_working(user_id: int):
     session = Session()
