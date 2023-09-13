@@ -16,3 +16,4 @@ six==1.16.0
 SQLAlchemy @ file:///C:/Windows/Temp/abs_f8661157-660b-49bb-a790-69ab9f3b8f7c8a8s2psb/croots/recipe/sqlalchemy_1657867864564/work
 Werkzeug==2.3.6
 zipp==3.15.0
+gunicorn==19.9.0
