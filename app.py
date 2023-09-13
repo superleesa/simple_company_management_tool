@@ -43,11 +43,15 @@ def login():
 
         # check if a user with given username exists
         session = Session()
-        possible_user = session.query(User).filter(User.username == username and User.password == password)
-        if len(list(possible_user)) == 1:
-            login_user(possible_user[0])
-            # serve user's landing page
-            return redirect(url_for("employee.index"))
+        possible_user = session.query(User).filter(User.username == username and User.password == password).first()
+        if possible_user is not None:
+            login_user(possible_user)  # use flask-login's function to log in this user
+
+            if possible_user.is_admin:
+                return redirect(url_for("admin.show_users"))  # todo: create admin.index
+            else:
+                # if user is worker: serve worker's landing page
+                return redirect(url_for("employee.index"))
 
         flash("Incorrect username or pasword")
 
@@ -56,7 +60,7 @@ def login():
 @app.route("/logout")
 @login_required
 def logout():
-    redirect(url_for("index"))
+    return redirect(url_for("login"))
 
 
 if __name__ == "__main__":

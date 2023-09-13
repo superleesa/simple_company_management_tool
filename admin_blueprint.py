@@ -63,4 +63,4 @@ def show_users():
     session = Session()
     users = session.query(User).all()
     print(users)
-    return render_template("check_users.html", users=users)
+    return render_template("check_users2.html", users=users)
