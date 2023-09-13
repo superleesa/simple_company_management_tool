@@ -9,6 +9,13 @@
 .work-status-change-button{
     height: 50px;
     width: 200px;
+    background-color: #7dc0c0;
+    border: solid #1e6b6b;
+}
+
+.work-status-change-button:hover{
+    background-color: #166060;
+    cursor: pointer;
 }
 
 .error{

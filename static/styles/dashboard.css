@@ -1,4 +1,4 @@
-    body {
+body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -9,15 +9,29 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
 }
-
 canvas{
+    width: 500px;
+    height: 250px;
+}
+
+.dashboard-element{
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 10px 10px;
+
+
+}
+.dashboard-element-textbox{
+    color: #7dc0c0;
+    width: 478px;
+    height: 230px;
+
 }
 
+
 .cell {
-    height: 240px; /* Adjust height as needed */
+    height: 250px;
+    /*width: 500px;*/
 
 }
 

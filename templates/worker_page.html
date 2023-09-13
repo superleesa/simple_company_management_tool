@@ -11,6 +11,7 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/stylesheet.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/dashboard.css') }}">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     </head>
     <body>
         <h2>Good Morning {{ current_user.first_name }}!</h2>
@@ -27,15 +28,13 @@
 
         {% if has_started_work %}
         <div class="action-container">
-{#            <h2 class="work-status-change-button-text">Finish Today's Work</h2>#}
-            <form action="{{ url_for('.finish_work')}}" method="POST">
+            <form action="{{ url_for('.finish_work') }}" method="POST">
                 <input type="hidden" id="end-work" name="end-datetime" value="">
                 <button type="submit" onclick="recordClickDateTime('end-work')" class="work-status-change-button">Finish Today's Work</button>
             </form>
         </div>
         <div class="action-container">
-{#            <h2 class="work-status-change-button-text">Cancel Today's Work</h2>#}
-            <form action="{{ url_for('.cancel_work')}}" method="POST">
+            <form action="{{ url_for('.cancel_work') }}" method="POST">
                 <button type="submit" class="work-status-change-button">Cancel</button>
             </form>
         </div>
@@ -44,9 +43,8 @@
             <div class="actions-container">
                 <h2>Actions</h2>
                 <div class="action-container">
-    {#              <h2 class="work-status-change-button-text">Start Today's Work</h2>#}
 
-                    <form class="action-form" action="{{ url_for('.start_work')}}" method="POST">
+                    <form class="action-form" action="{{ url_for('.start_work') }}" method="POST">
                         <input type="hidden" id="start-work" name="start-datetime" value="">
                         <button type="submit" onclick="recordClickDateTime('start-work')" class="work-status-change-button"><h3>Start Today's Work</h3></button>
                     </form>
@@ -56,79 +54,149 @@
         {% endif %}
 
     <div class="grid">
-        <div class="cell left"><canvas id="chart1"></canvas></div>
-        <div class="cell right"><canvas id="chart2"></canvas></div>
-        <div class="cell left"><canvas id="chart3"></canvas></div>
-        <div class="cell right"><canvas id="chart4"></canvas></div>
+        <div class="cell left"><canvas id="chart1" class="dashboard-element"></canvas></div>
+        <div class="cell right"><canvas id="chart2" class="dashboard-element"></canvas></div>
+        <div class="cell left"><canvas id="chart3" class="dashboard-element"></canvas></div>
+        <div class="cell right"><div id="chart4" class="dashboard-element dashboard-element-textbox"><h2> You contributed <div style="text-align: center"><span style="font-size: 100px;">${{ total_sales_past_month }}</span></div> in a past month. Keep up your work!</h2></div></div>
     </div>
 
     </body>
 
     <script>
-        const workData = {{ work_data }};
-        const salesData = {{ sales_data }};
+
+        const [workStartDateString, workHours] = {{ work_data|safe }};
+        const [saleEndDateString, saleAmount] = {{ sales_data|safe }};
+        const [efficiencyDateString, efficiency] = {{ efficiency_data|safe }};
+        {#console.log(workData);#}
+        {##}
+        {#const [workStartDateString, workHours] = JSON.parse(workData);#}
+        {#const [saleEndDateString, saleAmount] = JSON.parse(salesData);#}
+
+        console.log(workStartDateString);
+
+        // need to convert string to date object
+        const workStartDate = workStartDateString.map(x => {return new Date(x)});
+        const saleEndDate = saleEndDateString.map(x => {return new Date(x)});
+        const efficiencyDate = efficiencyDateString.map(x => {return new Date(x)});
+
+        console.log(workStartDate);
+        console.log(saleEndDate);
 
         const ctx = document.getElementById('chart1');
 
             new Chart(ctx, {
-                type: 'bar',
+                type: 'line',
                 data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                labels: workStartDate,
                 datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    borderWidth: 1
+                    label: 'Working Hours per Month',
+                    data: workHours,
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
                 }]
-                },
-                options: {
-                scales: {
-                    y: {
-                    beginAtZero: true
+                },options: {
+                    scales: {
+
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'month',
+
+                            },
+                            title: {
+                                display: true,
+                                text: 'Month'
+                            }
+                        },
+
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Hour'
+                            }
+                        }
+
                     }
-                }
                 }
             });
 
         const ctx2 = document.getElementById('chart2');
 
         new Chart(ctx2, {
-            type: 'bar',
+            type: 'line',
             data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            labels: saleEndDate,
             datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                borderWidth: 1
+                label: 'Sales per Month',
+                data: saleAmount,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
             }]
-            },
-            options: {
-            scales: {
-                y: {
-                beginAtZero: true
+            },options: {
+                    scales: {
+
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'month',
+
+                            },
+                            title: {
+                                display: true,
+                                text: 'Month'
+                            }
+                        },
+
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Sales'
+                            }
+                        }
+
+                    }
                 }
-            }
-            }
         });
 
         const ctx3 = document.getElementById('chart3');
 
         new Chart(ctx3, {
-            type: 'bar',
+            type: 'line',
             data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            labels: efficiencyDate,
             datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                borderWidth: 1
+                label: 'Efficiency',
+                data: efficiency,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
             }]
-            },
-            options: {
-            scales: {
-                y: {
-                beginAtZero: true
+            },options: {
+                    scales: {
+
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'month',
+
+                            },
+                            title: {
+                                display: true,
+                                text: 'Month'
+                            }
+                        },
+
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Efficiency (average sales/hour)'
+                            }
+                        }
+
+                    }
                 }
-            }
-            }
         });
 
     </script>

@@ -10,7 +10,7 @@ if __name__ == "__main__":
     fake = Faker()
 
     # insert employees
-    for _ in range(10):
+    for _ in range(5):
         username = fake.user_name()
         password = fake.password()
         first_name = fake.first_name()
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     user_ids = [user.id for user in session.query(User).all()]
 
     # Generate and insert random sales and work data
-    for _ in range(10):  # Generate data for 10 records (adjust as needed)
+    for _ in range(150):
         # Random user ID for sales and work
         user_id = fake.random_element(elements=user_ids)
 
