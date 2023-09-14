@@ -5,35 +5,49 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Add User</h1>
-    <!-- add conditions for username and password -->
-    {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-            <ul class="flashes">
-            {% for category, message in messages %}
-                <li class="{{ category }}">{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
+    <div style="display:flex; justify-content: center; margin-bottom: 20px;margin-top: 20px;"><h2>Add New User</h2></div>
+    <div id="main">
 
-    <form action="{{ url_for('.add_user') }}" method="POST">
-        <label for="username">Username</label>
-        <input type="text" class="input_box" id="username" name="username" minlength="4" maxlength="8" size="10">
-        <label for="password1">Password</label>
-        <input type="text" class="input_box" id="password1" name="password1" minlength="4" maxlength="8" size="10">
+        <!-- add conditions for username and password -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
 
-        <label for="password2">Type the password again</label>
-        <input type="text" class="input_box" id="password2" name="password2" minlength="4" maxlength="8" size="10" oninput="verifyPassword()">
+        <form action="{{ url_for('.add_user') }}" method="POST">
+            <div class="input-box">
+                <label for="username">Username</label>
+                <div class="input-wrapper"><input type="text" class="input_box" id="username" name="username" minlength="5" maxlength="15" size="15"></div>
+            </div>
+            <div class="input-box">
+                <label for="password1">Password</label>
+                <div class="input-wrapper"><input type="text" class="input_box" id="password1" name="password1" minlength="8" maxlength="15" size="15"></div>
+            </div>
+            <div class="input-box">
+                <label for="password2">Type the password again</label>
+                <div class="input-wrapper"><input type="text" class="input_box" id="password2" name="password2" minlength="8" maxlength="15" size="15" oninput="verifyPassword()"></div>
+            </div>
 
-        <label for="first-name">First Name</label>
-        <input type="text" class="input_box" id="first-name" name="first-name" minlength="1" maxlength="20" size="15">
-        <label for="last-name">Last Name</label>
-        <input type="text" class="input_box" id="last-name" name="last-name" minlength="1" maxlength="20" size="15">
-        <label for="is-admin">Register as an administrator</label>
-        <input type="checkbox" class="input_box" id="is-admin" name="is-admin">
-        <button type="submit">Add User</button>
-    </form>
+            <div class="input-box">
+                <label for="first-name">First Name</label>
+                <div class="input-wrapper"><input type="text" class="input_box" id="first-name" name="first-name" minlength="1" maxlength="20" size="15"></div>
+            </div>
+            <div class="input-box">
+                <label for="last-name">Last Name</label>
+                <div class="input-wrapper"><input type="text" class="input_box" id="last-name" name="last-name" minlength="1" maxlength="20" size="15"></div>
+            </div>
+            <div class="input-box">
+                <label for="is-admin">Register as an administrator?</label>
+                <div class="input-wrapper"><input type="checkbox" class="input_box" id="is-admin" name="is-admin"></div>
+            </div>
+            <button type="submit">Add User</button>
+        </form>
+    </div>
 {% endblock %}
 
 {% block script %}
@@ -52,9 +66,44 @@
     }
 {% endblock %}
 {% block style %}
+    #main{
+        background-color: #F0F0F0;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
     form{
         display: flex;
         flex-direction: column;
         align-items: center;
+        gap: 20px;
+    }
+    input{
+        height: 30px;
+        border: solid;
+        border-color: #4bc0c0;
+    }
+
+    label{
+        display:block;
+        width: 300px;
+        font-size: 20px;
+    }
+    .input-box{
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+    .input-wrapper{
+        width: 200px;
+    }
+    button[type="submit"]{
+        height: 50px;
+        width: 200px;
+        background-color: #7dc0c0;
+        border: solid #1e6b6b;
+    }
+    button[type="submit"]:hover{
+        background-color: #166060;
+        cursor: pointer;
     }
 {% endblock %}
