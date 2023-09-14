@@ -22,3 +22,10 @@ class User(Base, UserMixin):
     
     def get_id(self):
         return str(self.id)
+
+    def to_dict_without_password(self):
+        return {"id": self.id, "username": self.username,
+                "first_name": self.first_name,
+                "last_name": self.last_name,
+                "email_address": self.email_address,
+                "is_working": self.is_working}

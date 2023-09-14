@@ -9,6 +9,7 @@ from flask import (
 
 from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy import desc
+import json
 from config import login_manager, Session
 from models import User, Work
 
@@ -62,5 +63,6 @@ def add_user():
 def show_users():
     session = Session()
     users = session.query(User).all()
-    print(users)
-    return render_template("check_users2.html", users=users)
+    user_objects = [user.to_dict_without_password() for user in users]
+    # print(json.dumps(user_objects))
+    return render_template("check_users2.html", users=user_objects)

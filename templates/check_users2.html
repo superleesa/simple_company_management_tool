@@ -1,12 +1,15 @@
 {% extends "admin_base.html" %}
 {% block title %}Show Users{% endblock %}
 {% block stylesheet %}<link rel="stylesheet" href="{{ url_for('static', filename='styles/stylesheet3.css') }}">{% endblock %}
-{% block head_script %}<script src="https://kit.fontawesome.com/8ea8b0a00c.js" crossorigin="anonymous"></script>{% endblock %}
+{% block head_script %}
+    <script src="https://kit.fontawesome.com/8ea8b0a00c.js" crossorigin="anonymous"></script>
+{% endblock %}
+{% block username %}{{ current_user.first_name }}{% endblock %}
 {% block body %}
     <div id="main">
         <div id="page-title-with-search-bar">
             <h3>Search Users</h3>
-            <input type="text" id="search-input" placeholder="Search...">
+            <input type="text" id="search-input" placeholder="Search by full name...">
             <i class="fa-solid fa-plus"></i>
 {#            <button style="width:50px;height:50px;">Add User</button>#}
         </div>
@@ -16,17 +19,20 @@
 {#            <button id="not-working-selector" class="work-filter-button">Not Working</button>#}
 {#        </div>#}
         <div style="width:900px;height:50px;display:flex;justify-content: center;align-items:center;gap:20px;border-bottom:solid;"><span style="width:200px;">Full Name</span><span style="width:150px;">Username</span><span style="width:80px;">Working Status</span><span style="width:200px;">Email Address</span></div>
-        <hr>
         <div id="user-boxes-container" style="display:flex;flex-direction:column; align-items:center">
             {% for user in users %}
                 <div class="user-box" style="width:900px;height:50px;display:flex;justify-content: center;align-items:center;gap:20px;">
-                    <span style="font-size: 15px;width:200px;">{{ user.first_name }} {{user.last_name}}</span><span style="width:150px;">@{{ user.username }}</span><span style="width:80px;">{{ "Active" if user.is_working else "Inactive"}}</span><span style="width:200px;">{{ user.email_address }}</span>
+                    <span style="font-size: 15px;width:200px;">{{ user["first_name"] }} {{user["last_name"]}}</span><span style="width:150px;">@{{ user["username"] }}</span><span style="width:80px;">{{ "Active" if user["is_working"] else "Inactive"}}</span><span style="width:200px;">{{ user["email_address"] }}</span>
                 </div>
             {% endfor %}
         </div>
     </div>
-
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/find_user.js') }}"></script>
 {% endblock %}
+{% block script %}
+    const users = {{ users|tojson|safe }};
+{% endblock %}
+
 {% block style %}
     #page-title-with-search-bar{
         display: flex;

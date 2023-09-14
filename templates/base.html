@@ -20,7 +20,7 @@
             <div class="header-end" id="header-right-end">
                 {% block header_right %}{% endblock %}
                 <div class="dropdown">
-                    <button class="dropdown-button">User A</button>
+                    <button class="dropdown-button">{% block username %}{% endblock %}</button>
                     <ul class="dropdown-content align-right">
                         <li><a href="#">Log Out</a></li>
                         <li><a href="#">Setting</a></li>
