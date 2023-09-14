@@ -22,24 +22,28 @@
         <form action="{{ url_for('.add_user') }}" method="POST">
             <div class="input-box">
                 <label for="username">Username</label>
-                <div class="input-wrapper"><input type="text" class="input_box" id="username" name="username" minlength="5" maxlength="15" size="15"></div>
+                <div class="input-wrapper"><input type="text" class="input_box" id="username" name="username" minlength="5" maxlength="15" size="20"></div>
             </div>
             <div class="input-box">
                 <label for="password1">Password</label>
-                <div class="input-wrapper"><input type="text" class="input_box" id="password1" name="password1" minlength="8" maxlength="15" size="15"></div>
+                <div class="input-wrapper"><input type="text" class="input_box" id="password1" name="password1" minlength="8" maxlength="15" size="20"></div>
             </div>
             <div class="input-box">
                 <label for="password2">Type the password again</label>
-                <div class="input-wrapper"><input type="text" class="input_box" id="password2" name="password2" minlength="8" maxlength="15" size="15" oninput="verifyPassword()"></div>
+                <div class="input-wrapper"><input type="text" class="input_box" id="password2" name="password2" minlength="8" maxlength="15" size="20" oninput="verifyPassword()"></div>
             </div>
 
             <div class="input-box">
                 <label for="first-name">First Name</label>
-                <div class="input-wrapper"><input type="text" class="input_box" id="first-name" name="first-name" minlength="1" maxlength="20" size="15"></div>
+                <div class="input-wrapper"><input type="text" class="input_box" id="first-name" name="first-name" minlength="1" maxlength="20" size="20"></div>
             </div>
             <div class="input-box">
                 <label for="last-name">Last Name</label>
-                <div class="input-wrapper"><input type="text" class="input_box" id="last-name" name="last-name" minlength="1" maxlength="20" size="15"></div>
+                <div class="input-wrapper"><input type="text" class="input_box" id="last-name" name="last-name" minlength="1" maxlength="20" size="20"></div>
+            </div>
+            <div class="input-box">
+                <label for="email-address">Email Address</label>
+                <div class="input-wrapper"><input type="text" class="input_box" id="email-address" name="email-address" minlength="1" maxlength="25" size="20"></div>
             </div>
             <div class="input-box">
                 <label for="is-admin">Register as an administrator?</label>

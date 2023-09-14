@@ -28,6 +28,7 @@ def add_user():
         password = request.form["password1"]
         first_name = request.form["first-name"]
         last_name = request.form["last-name"]
+        email_address = request.form["email-address"]
         is_admin = bool(request.form.get("is-admin"))
 
     except KeyError as e:
@@ -39,9 +40,9 @@ def add_user():
     # check if a user with the inputted username alreadey exits or not
     #TODO don't store passwords literally - store hashed ones
     session = Session()
-    existing_user = session.query(User).filter(User.username == username)
+    existing_user = session.query(User).filter(User.username == username).first()
 
-    if len(list(existing_user)) == 0:
+    if existing_user is not None:
         flash("There was an existing user with the same username", "error")
         session.close()
         return render_template("admin_add_user.html")
@@ -51,6 +52,7 @@ def add_user():
                      password=password,
                      first_name=first_name,
                      last_name=last_name,
+                     email_address=email_address,
                      is_working=False,
                      is_admin=is_admin))
     session.commit()
