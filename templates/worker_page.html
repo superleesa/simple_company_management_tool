@@ -72,15 +72,10 @@
         {#const [workStartDateString, workHours] = JSON.parse(workData);#}
         {#const [saleEndDateString, saleAmount] = JSON.parse(salesData);#}
 
-        console.log(workStartDateString);
-
         // need to convert string to date object
         const workStartDate = workStartDateString.map(x => {return new Date(x)});
         const saleEndDate = saleEndDateString.map(x => {return new Date(x)});
         const efficiencyDate = efficiencyDateString.map(x => {return new Date(x)});
-
-        console.log(workStartDate);
-        console.log(saleEndDate);
 
         const ctx = document.getElementById('chart1');
 

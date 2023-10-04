@@ -170,6 +170,7 @@ def retrieve_past_work_data(user_id: int):
             work_hour = work_end_date - work_start_date
             work_hours.append(work_hour.seconds // 3600)
 
+        # TODO: modularize this part
         processed_work_data = [work_start_dates, work_hours]
 
         # processing sales data

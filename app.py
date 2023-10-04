@@ -31,9 +31,9 @@ def index():
 @login_manager.user_loader
 def load_user(user_id):
     session = Session()
-    employee = session.query(User).filter(User.id == int(user_id))
+    employee = session.query(User).filter(User.id == int(user_id)).first()
     session.close()
-    return employee[0]
+    return employee
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -48,7 +48,7 @@ def login():
             login_user(possible_user)  # use flask-login's function to log in this user
 
             if possible_user.is_admin:
-                return redirect(url_for("admin.show_users"))  # todo: create admin.index
+                return redirect(url_for("admin.index"))  # todo: create admin.index
             else:
                 # if user is worker: serve worker's landing page
                 return redirect(url_for("employee.index"))
