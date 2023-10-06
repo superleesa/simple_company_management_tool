@@ -4,17 +4,21 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 
     <script>
-        // collects variables
+        // collect variables
+        const dateStringToWorkedHours = {{ dateToWorkedHours|safe }};
+        const topWorkingHoursWorkers = {{ topWorkingHoursWorkers|safe }}
 
-        // variables for total work hours
-        const [workSessionDatesString, workHours] = {{ worked_hours|safe }};
-    {#    const [saleEndDateString, saleAmount] = {{ sales_data|safe }};#}
-    {#    const [efficiencyDateString, efficiency] = {{ efficiency_data|safe }};#}
 
-        // need to convert string to date object
-        const workSessionDates = workSessionDatesString.map(x => {return new Date(x)});
-    {#    const saleEndDate = saleEndDateString.map(x => {return new Date(x)});#}
-    {#    const efficiencyDate = efficiencyDateString.map(x => {return new Date(x)});#}
+        const sortedDates = Object.keys(dateStringToWorkedHours).sort();
+        const workedDates = [];
+        const workedHours = [];
+
+        for (let key of sortedDates){
+            workedDates.push(new Date(key));
+            workedHours.push(dateStringToWorkedHours[key]);
+        }
+
+
 
     </script>
 

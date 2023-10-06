@@ -9,7 +9,7 @@ from flask import (
 )
 
 from flask_login import login_user, logout_user, login_required, current_user
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 import json
 from config import login_manager, Session
 from models import User, Work, Sales
@@ -82,77 +82,19 @@ def index():
     if not current_user.is_admin:
         return "Access denied. You are not an admin."
 
+    today = datetime.datetime.now()
+    three_months_before = today - datetime.timedelta(days=90)
+
     # retrieve data
-    worked_hours = retrieve_company_work_hours()
+    total_worked_hours = retrieve_company_work_hours_in_a_timeframe(three_months_before, today)
 
-    return render_template("admin_index.html", worked_hours=dumps(worked_hours))
-
-
-def retrieve_company_work_hours():
-    session = Session()
-
-    # retrieve all work sessions (across workers) from the database
-    work_records = session.query(Work).filter(Work.start_datetime, Work.end_datetime).all()
-
-    # prepare data structure to store work sessions
-    # find min start datetime and max end datetime
-    min_work_start_datetime = min(work_records, key=lambda x: x.start_datetime).start_datetime
-    max_work_end_datetime = max(work_records, key=lambda x: x.end_datetime).end_datetime
-
-    num_days = (max_work_end_datetime - min_work_start_datetime).days + 1  # number of days within the data
-    date_labels = [(min_work_start_datetime+datetime.timedelta(days=offset)).date().isoformat() for offset in range(num_days)]  # to store date labels in string format
-    work_hours_per_day = [0]*num_days  # to store work hours
-
-    # traverse through each work record and add it the data structure
-    for work_record in work_records:
-        work_start_date, work_end_date = work_record.start_datetime, work_record.end_datetime
-
-        work_sessions = split_work_session(work_start_date, work_end_date, min_work_start_datetime)
-        for work_session in work_sessions:
-            date_index, worked_hours = work_session
-            work_hours_per_day[date_index] += worked_hours
-
-    session.close()
-
-    return date_labels, work_hours_per_day
+    top_working_hours_workers = get_top_k_worker_data_in_a_timeframe(three_months_before, today, 5)
 
 
-def get_date_index(date, min_work_start_datetime):
-    return (date - min_work_start_datetime).days
+    return render_template("admin_index.html",
+                           dateToWorkedHours=dumps(total_worked_hours),
+                           topWorkingHoursWorkers=dumps(top_working_hours_workers))
 
-
-def split_work_session(start_datetime, end_datetime, min_work_start_datetime):
-    """
-    splits one work session to days, if it goes over multiple days
-    :param start_datetime:
-    :param end_datetime:
-    :return:
-    """
-    current_datetime = start_datetime
-    results = []
-
-    while current_datetime <= end_datetime:
-        # Calculate the end of the current day
-        end_of_day = datetime.datetime(
-            year=current_datetime.year,
-            month=current_datetime.month,
-            day=current_datetime.day,
-            hour=23,
-            minute=59,
-            second=59
-        )
-
-        # Calculate the hours worked on the current day
-        hours_worked = min((end_of_day - current_datetime).total_seconds() / 3600, (end_datetime - current_datetime).total_seconds() / 3600)
-
-        # Append the date and hours worked to the results
-        results.append((get_date_index(current_datetime, min_work_start_datetime), hours_worked))
-
-        # Move to the next day
-        current_datetime += datetime.timedelta(days=1)
-        current_datetime = current_datetime.replace(hour=0, minute=0, second=0)
-
-    return results
 
 
 @admin_page.route("/get_user_data/<user_id>", methods=["POST"])

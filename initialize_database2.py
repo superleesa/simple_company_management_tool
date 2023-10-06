@@ -49,10 +49,12 @@ if __name__ == "__main__":
         # Random start and end datetimes for sales and work
         start_datetime = fake.date_time_between(start_date="-1y", end_date="now", tzinfo=None)
         end_datetime = start_datetime + timedelta(hours=fake.random_int(min=1, max=48))
+        worked_hours = (end_datetime - start_datetime).seconds // 3600 if end_datetime is not None else None
 
         # Create Sales and Work instances
         sales = Sales(manager_id=user_id, amount=amount, start_datetime=start_datetime, end_datetime=end_datetime)
-        work = Work(user_id=user_id, start_datetime=start_datetime, end_datetime=end_datetime)
+
+        work = Work(user_id=user_id, start_datetime=start_datetime, end_datetime=end_datetime, worked_hours=worked_hours)
 
         # Add to session
         session.add(sales)
