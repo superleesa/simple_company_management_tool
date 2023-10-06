@@ -4,9 +4,9 @@ from flask_login import UserMixin
 from models import Base
 
 from config import Session
-from metric import Metric
+from metricretriever import MetricRetriever
 
-class Sales(Base, Metric):
+class Sales(Base, MetricRetriever):
     __tablename__ = "sales_table"
 
     id = Column(Integer, primary_key=True)
