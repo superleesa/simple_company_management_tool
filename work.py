@@ -3,10 +3,9 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from models import Base
 from config import Session
-from metricretriever import MetricRetriever
 
 
-class Work(Base, MetricRetriever):
+class Work(Base):
     __tablename__ = "work_table"
     id = Column(Integer, primary_key=True)
     user_id = Column(ForeignKey("user_table.id"), nullable=False)

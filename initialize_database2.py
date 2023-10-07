@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 
 from config import Session
-from models import Sales, User, Work
+from models import Project, User, Work
 
 if __name__ == "__main__":
     session = Session()
@@ -52,7 +52,7 @@ if __name__ == "__main__":
         worked_hours = (end_datetime - start_datetime).seconds // 3600 if end_datetime is not None else None
 
         # Create Sales and Work instances
-        sales = Sales(manager_id=user_id, amount=amount, start_datetime=start_datetime, end_datetime=end_datetime)
+        sales = Project(manager_id=user_id, earning_amount=amount, start_datetime=start_datetime, received_earning_datetime=end_datetime)
 
         work = Work(user_id=user_id, start_datetime=start_datetime, end_datetime=end_datetime, worked_hours=worked_hours)
 

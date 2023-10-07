@@ -12,7 +12,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy import desc, func
 import json
 from config import login_manager, Session
-from models import User, Work, Sales
+from models import User, Work, Project
 from json import dumps
 
 import datetime
@@ -103,7 +103,7 @@ def get_user_data(user_id):
     session = Session()
 
     try:
-        sales_data = session.query(Sales.amount, Sales.end_datetime).filter(Sales.manager_id == user_id).order_by(Sales.end_datetime).all()
+        sales_data = session.query(Project.amount, Project.end_datetime).filter(Project.manager_id == user_id).order_by(Project.end_datetime).all()
     except:
         session.close()
         return abort(404, "This user is not registered")

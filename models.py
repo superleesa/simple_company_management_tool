@@ -8,4 +8,4 @@ from work import Work
 from user import User
 from project import Project
 from contrubution import Contribution
-from sales import Sales
+from project import Project

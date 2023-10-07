@@ -15,7 +15,7 @@ from json import dumps
 
 
 from config import login_manager, Session
-from models import User, Work, Sales
+from models import User, Work, Project
 
 employee_page = Blueprint("employee", __name__)
 
@@ -149,7 +149,7 @@ def retrieve_past_work_data(user_id: int):
 
 
         # sales data
-        sales_data = session.query(Sales.amount, Sales.start_datetime, Sales.end_datetime).filter(Sales.manager_id == user_id).order_by(Sales.end_datetime).all()
+        sales_data = session.query(Project.amount, Project.start_datetime, Project.end_datetime).filter(Project.manager_id == user_id).order_by(Project.end_datetime).all()
         sales_data = [tuple(row) for row in sales_data]
 
     except:
