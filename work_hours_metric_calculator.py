@@ -38,11 +38,18 @@ class WorkHoursMetricCalculator(MetricCalculator):
     def get_per_worker_metric_in_a_timeframe(self):
         num_days = (self.end_datetime - self.start_datetime).days + 1
         metric_history = []
+        worker_names = []
 
         for worker_id in self.workers:
+            # get worker name
+            fullname = self._get_worker_name(worker_id)
+            worker_names.append(fullname)
+
+
+            # get worker metric history
             work_records = self._get_work_records_for_a_worker(worker_id)
 
-            indivisual_metric_history = [None] * num_days
+            indivisual_metric_history = [0] * num_days
             for work_record in work_records:
                 work_start_datetime, work_end_datetime = work_record
 
@@ -58,12 +65,12 @@ class WorkHoursMetricCalculator(MetricCalculator):
         labels = [(self.start_datetime + datetime.timedelta(days=offset)).date().isoformat() for offset in
                   range(num_days)]
 
-        return metric_history, labels
+        return metric_history, labels, worker_names
 
 
     def get_sum_workers_metric_in_a_timeframe(self):
         num_days = (self.end_datetime - self.start_datetime).days + 1
-        metric_history = [None] * num_days
+        metric_history = [0] * num_days
 
         for worker_id in self.workers:
             work_records = self._get_work_records_for_a_worker(worker_id)

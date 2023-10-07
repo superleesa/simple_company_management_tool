@@ -23,6 +23,9 @@ class User(Base, UserMixin):
     def get_id(self):
         return str(self.id)
 
+    def get_fullname(self):
+        return self.first_name.capitalize() + " " + self.last_name.capitalize()
+
     def to_dict_without_password(self):
         return {"id": self.id, "username": self.username,
                 "first_name": self.first_name,

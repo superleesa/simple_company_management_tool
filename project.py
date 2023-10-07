@@ -3,8 +3,6 @@ from flask_login import UserMixin
 
 from models import Base
 
-from config import Session
-
 class Project(Base):
     __tablename__ = "project_table"
 

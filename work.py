@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, desc, func
 from sqlalchemy.ext.declarative import declarative_base
 
 from models import Base
-from config import Session
 
 
 class Work(Base):

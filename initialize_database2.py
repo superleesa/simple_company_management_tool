@@ -10,7 +10,7 @@ if __name__ == "__main__":
     fake = Faker()
 
     # insert employees
-    for _ in range(5):
+    for _ in range(10):
         username = fake.user_name()
         password = fake.password()
         first_name = fake.first_name()
@@ -52,12 +52,12 @@ if __name__ == "__main__":
         worked_hours = (end_datetime - start_datetime).seconds // 3600 if end_datetime is not None else None
 
         # Create Sales and Work instances
-        sales = Project(manager_id=user_id, earning_amount=amount, start_datetime=start_datetime, received_earning_datetime=end_datetime)
+        project = Project(manager_id=user_id, earnings=amount, start_datetime=start_datetime, received_earning_datetime=end_datetime)
 
         work = Work(user_id=user_id, start_datetime=start_datetime, end_datetime=end_datetime, worked_hours=worked_hours)
 
         # Add to session
-        session.add(sales)
+        session.add(project)
         session.add(work)
 
     # insert sales

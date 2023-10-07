@@ -17,6 +17,9 @@ from json import dumps
 
 import datetime
 
+from earnings_metric_calculator import EarningsMetricCalculator
+from work_hours_metric_calculator import WorkHoursMetricCalculator
+
 admin_page = Blueprint("admin", __name__)
 
 
@@ -25,6 +28,9 @@ admin_page = Blueprint("admin", __name__)
 @admin_page.route("/add_user", methods=["POST", "GET"])
 @login_required
 def add_user():
+    if not current_user.is_admin:
+        return "Access denied. You are not an admin."
+
     if request.method == "GET":
         return render_template("admin_add_user.html")
 
@@ -70,6 +76,8 @@ def add_user():
 @admin_page.route("/show_users")
 @login_required
 def show_users():
+    if not current_user.is_admin:
+        return "Access denied. You are not an admin."
     session = Session()
     users = session.query(User).all()
     user_objects = [user.to_dict_without_password() for user in users]
@@ -82,24 +90,38 @@ def index():
     if not current_user.is_admin:
         return "Access denied. You are not an admin."
 
+    # return EarningsAmount and WorkedHours of past two months first
     today = datetime.datetime.now()
-    three_months_before = today - datetime.timedelta(days=90)
+    three_months_before = today - datetime.timedelta(days=60)
+
+
 
     # retrieve data
-    total_worked_hours = retrieve_company_work_hours_in_a_timeframe(three_months_before, today)
+    # total_worked_hours = retrieve_company_work_hours_in_a_timeframe(three_months_before, today)
+    # top_working_hours_workers = get_top_k_worker_data_in_a_timeframe(three_months_before, today, 5)
 
-    top_working_hours_workers = get_top_k_worker_data_in_a_timeframe(three_months_before, today, 5)
+    whmc_all = WorkHoursMetricCalculator("all", three_months_before, today)
+    whm_hist_all, whm_labels_all = whmc_all.get_sum_workers_metric_in_a_timeframe()
+
+    whmc_top3 = WorkHoursMetricCalculator("topk", three_months_before, today, 3)
+    whm_hist_top3, whm_labels_top3, top3_worker_names = whmc_top3.get_per_worker_metric_in_a_timeframe()
 
 
     return render_template("admin_index.html",
-                           dateToWorkedHours=dumps(total_worked_hours),
-                           topWorkingHoursWorkers=dumps(top_working_hours_workers))
+                           whm_hist_all=dumps(whm_hist_all),
+                           whm_label_all=dumps(whm_labels_all),
+                           whm_hist_topk=dumps(whm_hist_top3),
+                           whm_label_topk=dumps(whm_labels_top3),
+                           whm_worker_names_topk=dumps(top3_worker_names)
+                           )
 
 
 
 @admin_page.route("/get_user_data/<user_id>", methods=["POST"])
 @login_required
 def get_user_data(user_id):
+    if not current_user.is_admin:
+        return "Access denied. You are not an admin."
     session = Session()
 
     try:

@@ -5,19 +5,28 @@
 
     <script>
         // collect variables
-        const dateStringToWorkedHours = {{ dateToWorkedHours|safe }};
-        const topWorkingHoursWorkers = {{ topWorkingHoursWorkers|safe }}
+        {#const dateStringToWorkedHours = {{ dateToWorkedHours|safe }};#}
+        {#const topWorkingHoursWorkers = {{ topWorkingHoursWorkers|safe }}#}
+        {##}
+        {##}
+        {#const sortedDates = Object.keys(dateStringToWorkedHours).sort();#}
+        {#const workedDates = [];#}
+        {#const workedHours = [];#}
+        {##}
+        {#for (let key of sortedDates){#}
+        {#    workedDates.push(new Date(key));#}
+        {#    workedHours.push(dateStringToWorkedHours[key]);#}
+
+        const earningsMetricValues = {{ whm_hist_all | safe }};
+        const earningsMetricLabelsString = {{ whm_label_all | safe }};
+
+        const earningsMetricTopKValues = {{ whm_hist_topk | safe }};
+        const earningsMetricTopKLabelString = {{ whm_label_topk | safe }};
+        const earningsMetricTopKWorkerNames = {{ whm_worker_names_topk | safe }};
 
 
-        const sortedDates = Object.keys(dateStringToWorkedHours).sort();
-        const workedDates = [];
-        const workedHours = [];
-
-        for (let key of sortedDates){
-            workedDates.push(new Date(key));
-            workedHours.push(dateStringToWorkedHours[key]);
-        }
-
+        const earningsMetricLabels = earningsMetricLabelsString.map(dateString => new Date(dateString));
+        const earningsMetricTopKLabels = earningsMetricTopKLabelString.map(dateString => new Date(dateString));
 
 
     </script>

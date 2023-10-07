@@ -45,7 +45,7 @@ class EarningsMetricCalculator(MetricCalculator):
         for worker_id in self.workers:
             project_records = self._get_project_records_for_a_worker(worker_id)
 
-            indivisual_metric_history = [None] * num_days
+            indivisual_metric_history = [0] * num_days
             for project_record in project_records:
                 project_start_datetime, project_end_datetime, project_earnings = project_record
 
@@ -63,9 +63,15 @@ class EarningsMetricCalculator(MetricCalculator):
 
     def get_sum_workers_metric_in_a_timeframe(self):
         num_days = (self.end_datetime - self.start_datetime).days + 1
-        metric_history = [None] * num_days
+        metric_history = [0] * num_days
+        worker_names = []
 
         for worker_id in self.workers:
+            # get worker name
+            fullname = self._get_worker_name(worker_id)
+            worker_names.append(fullname)
+
+            # get worker metric history
             project_records = self._get_project_records_for_a_worker(worker_id)
 
             for project_record in project_records:
@@ -79,7 +85,7 @@ class EarningsMetricCalculator(MetricCalculator):
         labels = [(self.start_datetime + datetime.timedelta(days=offset)).date().isoformat() for offset in
                   range(num_days)]
 
-        return metric_history, labels
+        return metric_history, labels, worker_names
 
     def _get_project_records_for_a_worker(self, worker_id):
         """returns a project records, within the timeframe, for given worker"""

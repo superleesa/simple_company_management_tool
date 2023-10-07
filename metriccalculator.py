@@ -116,3 +116,9 @@ class MetricCalculator(ABC):
 
     def _get_date_index(self, current_date):
         return (current_date - self.start_datetime).days
+
+    def _get_worker_name(self, worker_id):
+        with Session() as session:
+            user = (session.query(User).filter(User.id == worker_id).first())
+
+            return user.get_fullname()

@@ -1,47 +1,44 @@
+const createDatasetForChart = (kData, labels) => {
+    const colors = [
+        "rgb(102, 194, 165)",  // Turquoise
+        "rgb(252, 141, 98)",   // Light Salmon
+        "rgb(141, 160, 203)",  // Light Blue
+        "rgb(231, 138, 195)",  // Light Pink
+        "rgb(166, 216, 84)",   // Light Green
+        "rgb(255, 217, 47)",   // Yellow
+        "rgb(229, 196, 148)",  // Tan
+        "rgb(179, 179, 179)",  // Grey
+        "rgb(127, 127, 127)",  // Dark Grey
+        "rgb(188, 189, 34)"    // Olive Green
+    ];
 
+    const datasets = [];
 
-// defining functions
-const process_data = (dateStringToWorkedHours) => {
-
-    const sortedDates = Object.keys(dateStringToWorkedHours).sort();
-    const workedDates = [];
-    const workedHours = [];
-
-    for (let key of sortedDates){
-        workedDates.push(new Date(key));
-        workedHours.push(dateStringToWorkedHours[key]);
-    }
-
-    return [workedDates, workedHours];
-}
-
-const create_dataset_for_kData = (kData, label) => {
-    const dataset = [];
-
-    for (let workedHours in kData){
+    for (let idx=0; idx<kData.length; idx++){
         let a_dataset = {
-            label: label,
-            data: kData,
+            label: labels[idx],
+            data: kData[idx],
             fill: false,
-            borderColor: 'rgb(75, 192, 192)',
+            borderColor: colors[idx%colors.length],
             tension: 0.1
         };
 
-        dataset.push(a_dataset);
+        datasets.push(a_dataset);
     }
 
-    return dataset;
+    return datasets;
 }
+
 
 // viz 1
 const ctx = document.getElementById('chart1');
 new Chart(ctx, {
     type: 'line',
     data: {
-    labels: workedDates,
+    labels: earningsMetricLabels,
     datasets: [{
         label: 'Working Hours per Month',
-        data: workedHours,
+        data: earningsMetricValues,
         fill: false,
         borderColor: 'rgb(75, 192, 192)',
         tension: 0.1
@@ -75,21 +72,16 @@ new Chart(ctx, {
     }
 });
 
-topWorkingHoursWorkers.map(process_data)
+const topKDataset = createDatasetForChart(earningsMetricTopKValues, earningsMetricTopKWorkerNames)
+
 
 // viz 2
 const ctx2 = document.getElementById('chart2');
 new Chart(ctx2, {
     type: 'line',
     data: {
-    labels: workedDates,
-    datasets: [{
-        label: 'Working Hours per Month',
-        data: workedHours,
-        fill: false,
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1
-    }]
+    labels: earningsMetricTopKLabels,
+    datasets: topKDataset
     },options: {
         scales: {
 
