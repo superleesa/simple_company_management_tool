@@ -36,7 +36,7 @@ class WorkHoursMetricCalculator(MetricCalculator):
         return top_worker_ids
 
     def get_per_worker_metric_in_a_timeframe(self):
-        num_days = (self.end_datetime - self.start_datetime).days + 1
+        num_days = self.get_num_days_between()
         metric_history = []
         worker_names = []
 
@@ -62,14 +62,13 @@ class WorkHoursMetricCalculator(MetricCalculator):
             metric_history.append(indivisual_metric_history)
 
         # create labels
-        labels = [(self.start_datetime + datetime.timedelta(days=offset)).date().isoformat() for offset in
-                  range(num_days)]
+        labels = self.create_date_labels()
 
         return metric_history, labels, worker_names
 
 
     def get_sum_workers_metric_in_a_timeframe(self):
-        num_days = (self.end_datetime - self.start_datetime).days + 1
+        num_days = self.get_num_days_between()
         metric_history = [0] * num_days
 
         for worker_id in self.workers:
@@ -85,8 +84,7 @@ class WorkHoursMetricCalculator(MetricCalculator):
                                             total_hours_worked_in_this_session)
 
         # create labels
-        labels = [(self.start_datetime + datetime.timedelta(days=offset)).date().isoformat() for offset in
-                  range(num_days)]
+        labels = self.create_date_labels()
 
         return metric_history, labels
 

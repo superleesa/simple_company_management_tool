@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+</head>
+<body>
+    <h1>Data Fetcher</h1>
+    <label for="startMonth">Start Month: </label>
+    <input type="month" id="startMonth">
+    <label for="endMonth">End Month: </label>
+    <input type="month" id="endMonth">
+    <button id="fetchData">Fetch Data</button>
+    <div id="dataContainer">
+        <!-- Data will be displayed here -->
+    </div>
+    <script>
+        document.getElementById("fetchData").addEventListener("click", fetchData);
+
+        function fetchData() {
+            const startMonth = document.getElementById("startMonth").value;
+            const endMonth = document.getElementById("endMonth").value;
+            const dataRequired = "workingHours";
+            const dataFilter = "topk";
+
+            console.log(startMonth);
+
+            // Make an API request using fetch
+            const base_url = "{{ url_for('.get_data') }}"
+            fetch(base_url + `?dataRequired=${dataRequired}&dataFilter=${dataFilter}&startMonth=${startMonth}&endMonth=${endMonth}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Display data in dataContainer
+                    const dataContainer = document.getElementById("dataContainer");
+                    dataContainer.innerHTML = `<p>Data: ${JSON.stringify(data)}</p>`;
+                })
+                .catch(error => {
+                    console.error("Error fetching data:", error);
+                });
+        }
+    </script>
+</body>
+</html>

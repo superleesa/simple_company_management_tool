@@ -14,31 +14,31 @@ class EarningsMetricCalculator(MetricCalculator):
     def get_top_k_workers(self):
         with Session() as session:
             worker_records = (session
-                              .query(Project.user_id, func.sum(Project.amount).label("TotalSales"))
-                              .where(Project.fee_received_datetime >= self.start_datetime, Project.fee_received_datetime <= self.end_datetime)
+                              .query(Project.manager_id, func.sum(Project.earnings).label("TotalSales"))
+                              .where(Project.received_earning_datetime >= self.start_datetime, Project.received_earning_datetime <= self.end_datetime)
                               .group_by(Project.manager_id)
                               .order_by(desc("TotalSales"))
                               .limit(self.k)).all()
 
-        top_worker_ids = [worker_row.user_id for worker_row in worker_records]
+        top_worker_ids = [worker_row.manager_id for worker_row in worker_records]
 
         return top_worker_ids
 
     def get_worst_k_workers(self):
         with Session() as session:
             worker_records = (session
-                              .query(Project.user_id, func.sum(Project.amount).label("TotalSales"))
-                              .where(Project.fee_received_datetime >= self.start_datetime, Project.fee_received_datetime <= self.end_datetime)
+                              .query(Project.manager_id, func.sum(Project.earnings).label("TotalSales"))
+                              .where(Project.received_earning_datetime >= self.start_datetime, Project.received_earning_datetime <= self.end_datetime)
                               .group_by(Project.manager_id)
                               .order_by("TotalSales")
                               .limit(self.k)).all()
 
-        top_worker_ids = [worker_row.user_id for worker_row in worker_records]
+        top_worker_ids = [worker_row.manager_id for worker_row in worker_records]
 
         return top_worker_ids
 
-    def get_per_worker_metric_in_a_timeframe(self):
-        num_days = (self.end_datetime - self.start_datetime).days + 1
+    def get_sum_workers_metric_in_a_timeframe(self):
+        num_days = self.get_num_days_between()
         metric_history = []
 
         # traverse through each worker and add his/her work on each day to the records
@@ -56,13 +56,12 @@ class EarningsMetricCalculator(MetricCalculator):
             metric_history.append(indivisual_metric_history)
 
         # create labels
-        labels = [(self.start_datetime + datetime.timedelta(days=offset)).date().isoformat() for offset in
-                  range(num_days)]
+        labels = self.create_date_labels()
 
         return metric_history, labels
 
-    def get_sum_workers_metric_in_a_timeframe(self):
-        num_days = (self.end_datetime - self.start_datetime).days + 1
+    def get_per_worker_metric_in_a_timeframe(self):
+        num_days = self.get_num_days_between()
         metric_history = [0] * num_days
         worker_names = []
 
@@ -82,8 +81,7 @@ class EarningsMetricCalculator(MetricCalculator):
                 self._update_metric_history(project_start_datetime, project_end_datetime, metric_history, project_earnings)
 
         # create labels
-        labels = [(self.start_datetime + datetime.timedelta(days=offset)).date().isoformat() for offset in
-                  range(num_days)]
+        labels = self.create_date_labels()
 
         return metric_history, labels, worker_names
 

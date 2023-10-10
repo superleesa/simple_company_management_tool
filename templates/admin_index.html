@@ -2,21 +2,13 @@
 {% block head_script %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="{{ url_for('static', filename='/scripts/fetch.js') }}"></script>
 
     <script>
         // collect variables
-        {#const dateStringToWorkedHours = {{ dateToWorkedHours|safe }};#}
-        {#const topWorkingHoursWorkers = {{ topWorkingHoursWorkers|safe }}#}
-        {##}
-        {##}
-        {#const sortedDates = Object.keys(dateStringToWorkedHours).sort();#}
-        {#const workedDates = [];#}
-        {#const workedHours = [];#}
-        {##}
-        {#for (let key of sortedDates){#}
-        {#    workedDates.push(new Date(key));#}
-        {#    workedHours.push(dateStringToWorkedHours[key]);#}
+        const fetch_base_url = "{{ url_for('.get_data') }}"
 
+        // variables related to the plots
         const earningsMetricValues = {{ whm_hist_all | safe }};
         const earningsMetricLabelsString = {{ whm_label_all | safe }};
 
@@ -24,9 +16,13 @@
         const earningsMetricTopKLabelString = {{ whm_label_topk | safe }};
         const earningsMetricTopKWorkerNames = {{ whm_worker_names_topk | safe }};
 
-
         const earningsMetricLabels = earningsMetricLabelsString.map(dateString => new Date(dateString));
         const earningsMetricTopKLabels = earningsMetricTopKLabelString.map(dateString => new Date(dateString));
+
+        // data fetch restriction
+        const minAvailableYarAndTimeString = {{ min_available_year_and_time | safe }};
+        const minAvailableYarAndTime = new Date(minAvailableYarAndTimeString);
+
 
 
     </script>
@@ -35,12 +31,113 @@
 {% block body %}
     <div id="main">
         <div id="dashboard">
-            <canvas class="card" id="chart1"></canvas>
-            <canvas class="card" id="chart2"></canvas>
-            <canvas class="card" id="chart3"></canvas>
-            <canvas class="card" id="chart4"></canvas>
+
+            <!--card1-->
+            <div class="card">
+                <div class="data-month-selector">
+                    <label for="start-card1">Start month:</label>
+                    <input class="startMonth" type="month" id="start-card1" min="{{ min_available_year_and_time }}" />
+                    <label for="end-card1">End month:</label>
+                    <input class="endMonth" type="month" id="end-card1" min="{{ min_available_year_and_time }}" />
+                    <button id="fetchData1">Load</button>
+                </div>
+                <canvas id="chart1"></canvas>
+            </div>
+
+            <!-- card2 -->
+            <div class="card">
+                <div class="data-month-selector">
+                    <label for="start-card2">Start month:</label>
+                    <input class="startMonth" type="month" id="start-card2" min="{{ min_available_year_and_time }}" />
+                    <label for="end-card3">End month:</label>
+                    <input class="endMonth" type="month" id="end-card2" min="{{ min_available_year_and_time }}" />
+                    <button id="fetchData2">Load</button>
+                </div>
+                <canvas id="chart2"></canvas>
+            </div>
+
+            <!-- card3 -->
+            <div class="card">
+                <div class="data-month-selector">
+                    <label for="start-card3">Start month:</label>
+                    <input class="startMonth" type="month" id="start-card3" min="{{ min_available_year_and_time }}" />
+                    <label for="end-card3">End month:</label>
+                    <input class="endMonth" type="month" id="end-card3" min="{{ min_available_year_and_time }}" />
+                    <button id="fetchData3">Load</button>
+                </div>
+                <canvas id="chart3"></canvas>
+            </div>
+
+            <!-- card4 -->
+            <div class="card">
+                <div class="data-month-selector">
+                    <label for="start-card4">Start month:</label>
+                    <input class="startMonth" type="month" id="start-card4" min="{{ min_available_year_and_time }}" />
+                    <label for="end-card4">End month:</label>
+                    <input class="endMonth" type="month" id="end-card4" min="{{ min_available_year_and_time }}" />
+                    <button id="fetchData4">Load</button>
+                </div>
+                <canvas id="chart4"></canvas>
+            </div>
         </div>
-    <script src="{{ url_for('static', filename='scripts/show_plots.js') }}"></script>
+
+        <!--populating cards by plots-->
+        <script src="{{ url_for('static', filename='scripts/chart_creation_helper_functions.js') }}"></script>
+        <!--setting default values for data start/end selectors-->
+        <script>
+            // todo add validation to ensure that start date is less than the end date
+
+            // setting startSelectors
+            const currentDate = new Date();
+            const currentMonth = ("0" + (currentDate.getMonth() + 1)).slice(-2);
+            const currentYear = currentDate.getFullYear();
+            const maxMonthValue = `${currentYear}-${currentMonth}`
+
+            const endMonthControls = document.getElementsByClassName("endMonth");
+            Array.from(endMonthControls).forEach(control => {
+                control.value = maxMonthValue;
+                control.max = maxMonthValue;
+            })
+
+            // setting endSelectors
+            const oneMonthBefore = ("0" + (currentDate.getMonth())).slice(-2);
+            const startMonthDefaultValue = `${currentYear}-${oneMonthBefore}`;
+
+            const startMonthControls = document.getElementsByClassName("startMonth");
+            Array.from(startMonthControls).forEach(control => {
+                control.value = startMonthDefaultValue;
+                control.max = maxMonthValue;
+            })
+
+        </script>
+
+        <script>
+            // populate chart1
+            const context1 = document.getElementById('chart1');
+            let dataset = [{
+                label: 'Working Hours per Month',
+                data: earningsMetricValues,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+            addLineChartWithinAContext(context1, earningsMetricLabels, dataset);
+
+            // populate chart2
+            const context2 = document.getElementById('chart2');
+            const topKDataset = createDatasetForChart(earningsMetricTopKValues, earningsMetricTopKWorkerNames);
+            addLineChartWithinAContext(context2, earningsMetricTopKLabels, topKDataset);
+
+
+        </script>
+
+        <!-- associate function to the datafetch button-->
+        <script>
+            document.getElementById("fetchData1").addEventListener("click", (event) => fetchData(event, "earnings", "all", false));
+            document.getElementById("fetchData2").addEventListener("click", (event) => fetchData(event, "workingHours", "all", false));
+            document.getElementById("fetchData3").addEventListener("click", (event) => fetchData(event, "earnings", "topk", true));
+            document.getElementById("fetchData4").addEventListener("click", (event) => fetchData(event, "workingHours", "topk", true));
+        </script>
     </div>
 {% endblock %}
 
@@ -51,18 +148,31 @@
         padding-top: 30px;
     }
     #dashboard{
-        width: 80%;
+        width: 95%;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
-        gap: 20px;
+        gap: 15px;
     }
 
     .card{
-        width: 400px;
-        height: 300px;
-        border: solid;
+        width: 700px;
+{#        height: 600px;#}
+        border-radius: 1px;
+    }
+
+    .data-month-selector{
+        display:flex;
+        justify-content: center;
+    }
+
+    .startMonth{
+        margin-right: 15px;
+    }
+
+    .endMonth{
+        margin-right: 20px;
     }
 {% endblock %}
 {% block script %}

@@ -5,7 +5,8 @@ from flask import (
     redirect,
     render_template,
     flash,
-    abort
+    abort,
+    jsonify
 )
 
 from flask_login import login_user, logout_user, login_required, current_user
@@ -90,7 +91,7 @@ def index():
     if not current_user.is_admin:
         return "Access denied. You are not an admin."
 
-    # return EarningsAmount and WorkedHours of past two months first
+    # by default, EarningsAmount and WorkedHours of past two months are shown on the index page
     today = datetime.datetime.now()
     three_months_before = today - datetime.timedelta(days=60)
 
@@ -106,16 +107,66 @@ def index():
     whmc_top3 = WorkHoursMetricCalculator("topk", three_months_before, today, 3)
     whm_hist_top3, whm_labels_top3, top3_worker_names = whmc_top3.get_per_worker_metric_in_a_timeframe()
 
+    # get year and month of the oldest available data in the database
+
+    min_available_year_and_time = get_min_available_year_and_month()
 
     return render_template("admin_index.html",
                            whm_hist_all=dumps(whm_hist_all),
                            whm_label_all=dumps(whm_labels_all),
                            whm_hist_topk=dumps(whm_hist_top3),
                            whm_label_topk=dumps(whm_labels_top3),
-                           whm_worker_names_topk=dumps(top3_worker_names)
+                           whm_worker_names_topk=dumps(top3_worker_names),
+                           min_available_year_and_time=dumps(min_available_year_and_time)
                            )
 
+@admin_page.route("/test", methods=["GET"])
+def test():
+    return render_template("test/test_api.html")
 
+def get_min_available_year_and_month():
+    with Session() as session:
+        min_datetime_record = session.query(Work.start_datetime).order_by().limit(1).first()
+    min_available_year_and_time = min_datetime_record[0]
+    return min_available_year_and_time.date().isoformat()
+
+@admin_page.route("/api/data", methods=["GET"])
+@login_required
+def get_data():
+    if not current_user.is_admin:
+        return "Access denied. You are not an admin."
+
+    data_required = request.args.get("dataRequired")
+    data_filter = request.args.get("dataFilter")
+    is_calculation_per_worker = request.args.get("isCalculationPerWorker")
+
+    # todo need to support integers / list of integers too
+
+    # validation
+    valid_data = ["workingHours", "earnings"]
+    valid_data_filters = ["topk", "worstk", "all"]
+    if data_required not in valid_data or data_filter not in valid_data_filters:
+        abort(404, "requested invalid data type")
+
+    # parsing start and end months
+    start_month_raw = request.args.get("startMonth")
+    end_month_raw = request.args.get("endMonth")
+    start_month = datetime.datetime.strptime(start_month_raw, "%Y-%m")
+    end_month = datetime.datetime.strptime(end_month_raw, "%Y-%m")
+
+    # which metric?
+    if data_required == "workingHours":
+        mc = WorkHoursMetricCalculator(data_filter, start_month, end_month)
+    elif data_required == "earnings":
+        mc = EarningsMetricCalculator(data_filter, start_month, end_month)
+
+    # per worker or total sum?
+    if is_calculation_per_worker:
+        data = mc.get_per_worker_metric_in_a_timeframe()
+    else:
+        data = mc.get_sum_workers_metric_in_a_timeframe()
+
+    return jsonify(data)
 
 @admin_page.route("/get_user_data/<user_id>", methods=["POST"])
 @login_required

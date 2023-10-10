@@ -7,7 +7,7 @@ import datetime
 class MetricCalculator(ABC):
     """Provides filtering of users / computation of scores for users, using a specific metric"""
 
-    def __init__(self, workers, start_datetime, end_datetime, k=None):
+    def __init__(self, workers, start_datetime, end_datetime, k=4):
         """
         both start_datetime and end_datetime should be inclusive
 
@@ -31,13 +31,13 @@ class MetricCalculator(ABC):
             self.workers = workers
 
         elif workers == "topk":
-            if not self.k:
-                raise ValueError("when workers=topk, k and based_on parameters must be set")
+            # if not self.k:
+            #     raise ValueError("when workers=topk, k and based_on parameters must be set")
             self.workers = self.get_top_k_workers()
 
         elif workers == "worstk":
-            if not self.k:
-                raise ValueError("when workers=worstk, k and based_on parameters must be set")
+            # if not self.k:
+            #     raise ValueError("when workers=worstk, k and based_on parameters must be set")
             self.workers = self.get_worst_k_workers()
 
         elif workers == "all":
@@ -72,6 +72,14 @@ class MetricCalculator(ABC):
         worker_ids = [worker.id for worker in worker_records]
 
         return worker_ids
+
+    def get_num_days_between(self):
+        return (self.end_datetime - self.start_datetime).days + 1
+
+    def create_date_labels(self):
+        num_days = self.get_num_days_between()
+        return[(self.start_datetime + datetime.timedelta(days=offset)).date().isoformat() for offset in
+                  range(num_days)]
 
 
     def _update_metric_history(self, start_datetime, end_datetime, metric_history, metric_amount_per_session):
