@@ -5,7 +5,7 @@
     <script src="{{ url_for('static', filename='/scripts/fetch.js') }}"></script>
 
     <script>
-        // collect variables
+        // embed variables
         const fetch_base_url = "{{ url_for('.get_data') }}"
 
         // variables related to the plots
@@ -142,6 +142,9 @@
 {% endblock %}
 
 {% block style %}
+    body{
+    background-color: #f0f2f2;
+    }
     #main{
         display: flex;
         justify-content: center;
@@ -153,13 +156,17 @@
         flex-wrap: wrap;
         justify-content: center;
         align-items: center;
-        gap: 15px;
+        gap: 25px;
     }
 
     .card{
-        width: 700px;
+        width: 630px;
+        padding: 30px;
 {#        height: 600px;#}
-        border-radius: 1px;
+        border: solid 1px white;
+        border-radius: 20px;
+        background-color: white;
+{#        box-shadow: -1px -1px 10px grey;#}
     }
 
     .data-month-selector{
