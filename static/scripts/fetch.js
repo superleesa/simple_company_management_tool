@@ -37,7 +37,7 @@ function fetchData(event, dataRequired, dataFilter, isCalculationPerWorker) {
                 targetChart.destroy();
             }
 
-            addLineChartWithinAContext(canvas, labels, datasets);
+            populateLineChartWithinAContext(canvas, labels, datasets);
             // updateChart(targetChart, labels, datasets);
 
 

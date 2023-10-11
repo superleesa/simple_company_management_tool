@@ -49,7 +49,7 @@
                 <div class="data-month-selector">
                     <label for="start-card2">Start month:</label>
                     <input class="startMonth" type="month" id="start-card2" min="{{ min_available_year_and_time }}" />
-                    <label for="end-card3">End month:</label>
+                    <label for="end-card2">End month:</label>
                     <input class="endMonth" type="month" id="end-card2" min="{{ min_available_year_and_time }}" />
                     <button id="fetchData2">Load</button>
                 </div>
@@ -121,22 +121,26 @@
                 borderColor: 'rgb(75, 192, 192)',
                 tension: 0.1
             }]
-            addLineChartWithinAContext(context1, earningsMetricLabels, dataset);
+            populateLineChartWithinAContext(context1, earningsMetricLabels, dataset);
 
             // populate chart2
             const context2 = document.getElementById('chart2');
             const topKDataset = createDatasetForChart(earningsMetricTopKValues, earningsMetricTopKWorkerNames);
-            addLineChartWithinAContext(context2, earningsMetricTopKLabels, topKDataset);
+            populateLineChartWithinAContext(context2, earningsMetricTopKLabels, topKDataset);
 
 
         </script>
 
         <!-- associate function to the datafetch button-->
         <script>
-            document.getElementById("fetchData1").addEventListener("click", (event) => fetchData(event, "earnings", "all", false));
-            document.getElementById("fetchData2").addEventListener("click", (event) => fetchData(event, "workingHours", "all", false));
-            document.getElementById("fetchData3").addEventListener("click", (event) => fetchData(event, "earnings", "topk", true));
-            document.getElementById("fetchData4").addEventListener("click", (event) => fetchData(event, "workingHours", "topk", true));
+            document.getElementById("fetchData1").addEventListener("click",
+                (event) => fetchData(event, "earnings", "all", false));
+            document.getElementById("fetchData2").addEventListener("click",
+                (event) => fetchData(event, "workingHours", "all", false));
+            document.getElementById("fetchData3").addEventListener("click",
+                (event) => fetchData(event, "earnings", "topk", true));
+            document.getElementById("fetchData4").addEventListener("click",
+                (event) => fetchData(event, "workingHours", "topk", true));
         </script>
     </div>
 {% endblock %}

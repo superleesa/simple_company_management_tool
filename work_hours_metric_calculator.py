@@ -8,7 +8,7 @@ import datetime
 
 class WorkHoursMetricCalculator(MetricCalculator):
 
-    def __init__(self, workers, start_datetime, end_datetime, k=None):
+    def __init__(self, workers, start_datetime, end_datetime, k=4):
         super().__init__(workers, start_datetime, end_datetime, k)
 
     def get_top_k_workers(self):

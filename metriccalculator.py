@@ -28,6 +28,8 @@ class MetricCalculator(ABC):
 
         elif isinstance(workers, list):
             # note: all elements must be integers
+            if not all([isinstance(elem, int) for elem in workers]):
+                raise ValueError("if a list is passed to the workers argument, all elements must be integers")
             self.workers = workers
 
         elif workers == "topk":

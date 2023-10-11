@@ -41,7 +41,7 @@ function updateChart(chart, labels, newDatasets){
     chart.update();
 }
 
-function addLineChartWithinAContext(context, labels, datasets){
+function populateLineChartWithinAContext(context, labels, datasets){
     return new Chart(context, {
         type: 'line',
         data: {

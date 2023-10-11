@@ -8,7 +8,7 @@ import datetime
 
 class EarningsMetricCalculator(MetricCalculator):
 
-    def __init__(self, workers, start_datetime, end_datetime, k=None):
+    def __init__(self, workers, start_datetime, end_datetime, k=4):
         super().__init__(workers, start_datetime, end_datetime, k)
 
     def get_top_k_workers(self):
@@ -62,7 +62,7 @@ class EarningsMetricCalculator(MetricCalculator):
 
     def get_per_worker_metric_in_a_timeframe(self):
         num_days = self.get_num_days_between()
-        metric_history = [0] * num_days
+        metric_history = []
         worker_names = []
 
         for worker_id in self.workers:
@@ -73,12 +73,14 @@ class EarningsMetricCalculator(MetricCalculator):
             # get worker metric history
             project_records = self._get_project_records_for_a_worker(worker_id)
 
+            indivisual_metric_history = [0] * num_days
             for project_record in project_records:
                 project_start_datetime, project_end_datetime, project_earnings = project_record
 
 
                 # mutates the metric_history inside
-                self._update_metric_history(project_start_datetime, project_end_datetime, metric_history, project_earnings)
+                self._update_metric_history(project_start_datetime, project_end_datetime, indivisual_metric_history, project_earnings)
+            metric_history.append(indivisual_metric_history)
 
         # create labels
         labels = self.create_date_labels()

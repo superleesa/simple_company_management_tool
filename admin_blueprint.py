@@ -138,7 +138,11 @@ def get_data():
 
     data_required = request.args.get("dataRequired")
     data_filter = request.args.get("dataFilter")
-    is_calculation_per_worker = request.args.get("isCalculationPerWorker")
+    is_calculation_per_worker = True if request.args.get("isCalculationPerWorker") == "true" else False
+
+    print(data_required)
+    print(data_filter)
+    print(is_calculation_per_worker)
 
     # todo need to support integers / list of integers too
 
@@ -146,7 +150,7 @@ def get_data():
     valid_data = ["workingHours", "earnings"]
     valid_data_filters = ["topk", "worstk", "all"]
     if data_required not in valid_data or data_filter not in valid_data_filters:
-        abort(404, "requested invalid data type")
+        abort(404, "requested invalid data type or filter type")
 
     # parsing start and end months
     start_month_raw = request.args.get("startMonth")
@@ -166,6 +170,7 @@ def get_data():
     else:
         data = mc.get_sum_workers_metric_in_a_timeframe()
 
+    print(data)
     return jsonify(data)
 
 @admin_page.route("/get_user_data/<user_id>", methods=["POST"])
