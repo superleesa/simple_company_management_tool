@@ -24,7 +24,7 @@ app.register_blueprint(employee_page, url_prefix="/employee")
 # ===========endpoints========
 @app.route("/")
 def index():
-    return "hello world"
+    return redirect(url_for("login"))
 
 
 # login related

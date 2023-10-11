@@ -1,6 +1,7 @@
 # Simple Company Management App
 
 A demo app is deployed on [Render](https://simple-company-management-app.onrender.com).
+Please log in with username=feliciamiller and password=$W0eAzZ54A for accessing to a sample administrator user, and username=mweeks and password=!H8TkD&5n@ for a sample worker page.
 
 A simple company management app, targeting a small company, to track and visualize the working hours and sales for each worker. 
 It has the following functionalities:
