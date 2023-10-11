@@ -39,21 +39,19 @@ class EarningsMetricCalculator(MetricCalculator):
 
     def get_sum_workers_metric_in_a_timeframe(self):
         num_days = self.get_num_days_between()
-        metric_history = []
+        metric_history = [0] * num_days
 
         # traverse through each worker and add his/her work on each day to the records
         for worker_id in self.workers:
             project_records = self._get_project_records_for_a_worker(worker_id)
 
-            indivisual_metric_history = [0] * num_days
             for project_record in project_records:
                 project_start_datetime, project_end_datetime, project_earnings = project_record
 
                 # mutates the metric_history inside
-                self._update_metric_history(project_start_datetime, project_end_datetime, indivisual_metric_history,
+                self._update_metric_history(project_start_datetime, project_end_datetime, metric_history,
                                             project_earnings)
 
-            metric_history.append(indivisual_metric_history)
 
         # create labels
         labels = self.create_date_labels()

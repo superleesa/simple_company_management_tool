@@ -168,6 +168,7 @@ def get_data():
     if is_calculation_per_worker:
         data = mc.get_per_worker_metric_in_a_timeframe()
     else:
+        print("come here")
         data = mc.get_sum_workers_metric_in_a_timeframe()
 
     print(data)
