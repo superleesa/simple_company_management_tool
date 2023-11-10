@@ -40,7 +40,6 @@
             <div id="newClient" class="input-container">
               <label for="newClientName" class="textbox-label">Client name</label>
                 <div style="display: flex; justify-content: center;"><input type="text" id="newClientName" class="input-box" name="client-name"></div>
-
             </div>
 
             <!--existing client type -> need to choose one client from the existing clients-->
@@ -48,42 +47,43 @@
                 <label for="existingClients">Select an Existing Client</label>
     {#                <input type="text" id="client-search-input" placeholder="Start by typing in an existing client name...">#}
                 <div style="display: flex; justify-content: center;"><select id="existingClients" name="client-id"></select></div>
+                <script>
+                    const projectClientType = document.getElementById("clientType");
+                    const newClientContainer = document.getElementById("newClient");
+                    const existingClientContainer = document.getElementById("existingClient");
+
+                    projectClientType.addEventListener("change", () => {
+                        if (projectClientType.value === "new"){
+                            existingClientContainer.style.display = "none";
+                            newClientContainer.style.display = "flex";
+                        }else{
+                            newClientContainer.style.display = "none";
+                            existingClientContainer.style.display = "flex";
+
+                            // fetch existing clients and list them
+                            fetchExistingClients();
+
+                        }
+                    })
+
+                    function fetchExistingClients(){
+                        fetch('{{ url_for("api.get_client_profiles") }}')
+                            .then(response => response.json())
+                            .then(existingClientsInfo => {
+                                const existingClients = document.getElementById("existingClients");
+
+                                existingClientsInfo.forEach(clientInfo => {
+                                    const existingClientOption = document.createElement("option");
+                                    existingClientOption.value = clientInfo["id"]
+                                    existingClientOption.innerText = clientInfo["name"]
+                                    existingClients.appendChild(existingClientOption)
+                                })
+                            })
+                    }
+                </script>
             </div>
 
-            <script>
-                const projectClientType = document.getElementById("clientType");
-                const newClientContainer = document.getElementById("newClient");
-                const existingClientContainer = document.getElementById("existingClient");
 
-                projectClientType.addEventListener("change", () => {
-                    if (projectClientType.value === "new"){
-                        existingClientContainer.style.display = "none";
-                        newClientContainer.style.display = "flex";
-                    }else{
-                        newClientContainer.style.display = "none";
-                        existingClientContainer.style.display = "flex";
-
-                        // fetch existing clients and list them
-                        fetchExistingClients();
-
-                    }
-                })
-
-                function fetchExistingClients(){
-                    fetch('{{ url_for("api.get_client_profiles") }}')
-                        .then(response => response.json())
-                        .then(existingClientsInfo => {
-                            const existingClients = document.getElementById("existingClients");
-
-                            existingClientsInfo.forEach(clientInfo => {
-                                const existingClientOption = document.createElement("option");
-                                existingClientOption.value = clientInfo["id"]
-                                existingClientOption.innerText = clientInfo["name"]
-                                existingClients.appendChild(existingClientOption)
-                            })
-                        })
-                }
-            </script>
 
 
             <div class="input-container">
@@ -126,7 +126,6 @@
 
 
 
-
             <button type="submit">Add Project</button>
         </form>
     </div>
@@ -161,6 +160,7 @@
         height: 30px;
         border: solid;
         border-color: #4bc0c0;
+        border-radius: 5px;
     }
 
     label{
@@ -178,9 +178,12 @@
     }
     button[type="submit"]{
         height: 50px;
-        width: 200px;
+        width: 40%;
         background-color: #7dc0c0;
-        border: solid #1e6b6b;
+        font-size: 20px;
+        border: solid 1px transparent;
+        border-radius: 5px;
+        padding: 10px;
     }
     button[type="submit"]:hover{
         background-color: #166060;
@@ -245,6 +248,9 @@
     .selected-manager{
         background-color: #7a7a7a;
     }
+    .input-container, button[type="submit"] {
+    box-sizing: border-box;
+}
 
 
 {% endblock %}
