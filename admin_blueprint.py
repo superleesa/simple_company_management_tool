@@ -13,7 +13,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from sqlalchemy import desc, func
 import json
 from config import login_manager, Session
-from models import User, Work, Project
+from models import User, Work, Project, Client
 from json import dumps
 
 import datetime
@@ -21,12 +21,12 @@ import datetime
 from earnings_metric_calculator import EarningsMetricCalculator
 from work_hours_metric_calculator import WorkHoursMetricCalculator
 
-admin_page = Blueprint("admin", __name__)
+admin_blueprint = Blueprint("admin", __name__)
 
 
 # todo add login setting later
 # todo ensure that there is a check if user is admin or not
-@admin_page.route("/add_user", methods=["POST", "GET"])
+@admin_blueprint.route("/users/add", methods=["POST", "GET"])
 @login_required
 def add_user():
     if not current_user.is_admin:
@@ -74,18 +74,47 @@ def add_user():
     return render_template("admin_add_user.html")
 
 
-@admin_page.route("/show_users")
+@admin_blueprint.route("/clients/add", methods=["GET", "POST"])
+@login_required
+def add_client():
+    if not current_user.is_admin:
+        return "Access denied. You are not an admin."
+
+    if request.method == "GET":
+        return render_template("admin_add_client.html")
+
+
+    try:
+        client_name = request.form["client-name"]
+
+    except KeyError as e:
+        print(e)
+        flash("At least one input was not filled in", "error")
+        return render_template("admin_add_user.html")
+
+
+    # add client
+    with Session() as session:
+        session.add(Client(name=client_name))
+        session.commit()
+
+    flash("Client added successfully", "success")
+    return render_template("admin_add_client.html")
+
+
+@admin_blueprint.route("/users")
 @login_required
 def show_users():
     if not current_user.is_admin:
         return "Access denied. You are not an admin."
+
+    # todo: use get_user_profile API
     session = Session()
     users = session.query(User).all()
     user_objects = [user.to_dict_without_password() for user in users]
-    # print(json.dumps(user_objects))
     return render_template("check_users2.html", users=user_objects)
 
-@admin_page.route("/")
+@admin_blueprint.route("/")
 @login_required
 def index():
     if not current_user.is_admin:
@@ -120,7 +149,7 @@ def index():
                            min_available_year_and_time=dumps(min_available_year_and_time)
                            )
 
-@admin_page.route("/test", methods=["GET"])
+@admin_blueprint.route("/test", methods=["GET"])
 def test():
     return render_template("test/test_api.html")
 
@@ -130,79 +159,70 @@ def get_min_available_year_and_month():
     min_available_year_and_time = min_datetime_record[0]
     return min_available_year_and_time.date().isoformat()
 
-@admin_page.route("/api/data", methods=["GET"])
+
+@admin_blueprint.route("/projects", methods=["GET"])
 @login_required
-def get_data():
+def get_projects():
+    # servers a list of projects
+    # todo create html for this
+    # put an edit button
+    pass
+
+@admin_blueprint.route("/projects/edit", methods=["POST", "GET"])
+@login_required
+def edit_project():
+    # todo add a page to modify the project (e.g. adding earnings)
+    # todo create a project modifying page
+    pass
+
+
+@admin_blueprint.route("/projects/add", methods=["POST", "GET"])
+@login_required
+def add_project():
+    # authentication
     if not current_user.is_admin:
         return "Access denied. You are not an admin."
 
-    data_required = request.args.get("dataRequired")
-    data_filter = request.args.get("dataFilter")
-    is_calculation_per_worker = True if request.args.get("isCalculationPerWorker") == "true" else False
+    # if method == get
+    if request.method == "GET":
+        return render_template("admin_add_project.html")
 
-    print(data_required)
-    print(data_filter)
-    print(is_calculation_per_worker)
-
-    # todo need to support integers / list of integers too
-
-    # validation
-    valid_data = ["workingHours", "earnings"]
-    valid_data_filters = ["topk", "worstk", "all"]
-    if data_required not in valid_data or data_filter not in valid_data_filters:
-        abort(404, "requested invalid data type or filter type")
-
-    # parsing start and end months
-    start_month_raw = request.args.get("startMonth")
-    end_month_raw = request.args.get("endMonth")
-    start_month = datetime.datetime.strptime(start_month_raw, "%Y-%m")
-    end_month = datetime.datetime.strptime(end_month_raw, "%Y-%m")
-
-    # which metric?
-    if data_required == "workingHours":
-        mc = WorkHoursMetricCalculator(data_filter, start_month, end_month)
-    elif data_required == "earnings":
-        mc = EarningsMetricCalculator(data_filter, start_month, end_month)
-
-    # per worker or total sum?
-    if is_calculation_per_worker:
-        data = mc.get_per_worker_metric_in_a_timeframe()
-    else:
-        print("come here")
-        data = mc.get_sum_workers_metric_in_a_timeframe()
-
-    print(data)
-    return jsonify(data)
-
-@admin_page.route("/get_user_data/<user_id>", methods=["POST"])
-@login_required
-def get_user_data(user_id):
-    if not current_user.is_admin:
-        return "Access denied. You are not an admin."
-    session = Session()
-
+    # input validation
+    print(request.form)
     try:
-        sales_data = session.query(Project.amount, Project.end_datetime).filter(Project.manager_id == user_id).order_by(Project.end_datetime).all()
+        manager_id = int(request.form["manager-id"])
+        client_id = request.form.get("client-id")
+        client_info = (int(client_id) if isinstance(client_id, str) and client_id.isdigit() else client_id) or request.form.get("client-name")
+        start_date_raw = request.form["start-date"]
+
     except:
-        session.close()
-        return abort(404, "This user is not registered")
+        # print(e)
+        flash("At least one input was not filled in", "error")
+        return render_template("admin_add_project.html")
+
+
+    # parse dates
+    start_date = datetime.datetime.strptime(start_date_raw, "%Y-%m-%d").date()
+
+
+    if isinstance(client_info, str):
+        # need to create a new client & insert it to the DB
+        with Session() as session:
+            client = Client(name=client_info)
+            session.add(client)
+            session.commit()
+
+            # get the client id
+            client_id = client.id
 
     else:
-        date_to_sales_map = {}
-        for sale in sales_data:
-            sale_amount, sale_start_datetime, sale_end_datetime = sale
-            sale_end_datetime = sale_end_datetime.date().isoformat()
-            if sale_end_datetime not in date_to_sales_map:
-                date_to_sales_map[sale_end_datetime] = 0
+        client_id = client_info
 
-            date_to_sales_map[sale_end_datetime] += sale_amount
+    # add project record
+    with Session() as session:
+        session.add(Project(client_id=client_id, manager_id=manager_id, start_date=start_date))
+        session.commit()
 
-        # split keys and sales data
-        sale_amounts = []
-        sale_end_datetimes_str = []
-        for sale_end_datetime, sale_amount in date_to_sales_map.items():
-            sale_amounts.append(sale_amount)
-            sale_end_datetimes_str.append(sale_end_datetime)
+    flash("Project added successfully", "success")
+    return render_template("admin_add_project.html")
 
-        processed_sale_data = [sale_end_datetimes_str, sale_amounts]
-    return processed_sale_data

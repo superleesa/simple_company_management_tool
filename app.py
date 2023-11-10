@@ -14,11 +14,14 @@ from flask_login import login_user, logout_user, login_required, current_user
 from config import app, Session, login_manager
 
 # =======blueprint registering=========
-from admin_blueprint import admin_page
-app.register_blueprint(admin_page, url_prefix="/admin")
+from admin_blueprint import admin_blueprint
+app.register_blueprint(admin_blueprint, url_prefix="/admin")
 
-from employee_blueprint import employee_page
-app.register_blueprint(employee_page, url_prefix="/employee")
+from employee_blueprint import employee_blueprint
+app.register_blueprint(employee_blueprint, url_prefix="/employee")
+
+from api_blueprint import api_blueprint
+app.register_blueprint(api_blueprint, url_prefix="/api")
 
 
 # ===========endpoints========

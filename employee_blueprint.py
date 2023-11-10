@@ -17,10 +17,10 @@ from json import dumps
 from config import login_manager, Session
 from models import User, Work, Project
 
-employee_page = Blueprint("employee", __name__)
+employee_blueprint = Blueprint("employee", __name__)
 
 
-@employee_page.route("/", methods=["GET"])
+@employee_blueprint.route("/", methods=["GET"])
 @login_required
 def index():
     user_id = current_user.id
@@ -39,7 +39,7 @@ def index():
                            efficiency_data=dumps(efficiency_data),
                            total_sales_past_month=total_sales_past_month)
 
-@employee_page.route("/start_work", methods=["POST"])
+@employee_blueprint.route("/start_work", methods=["POST"])
 @login_required
 def start_work():
     user_id = current_user.id
@@ -70,7 +70,7 @@ def start_work():
     flash("Started Today's Work", "success")
     return redirect(url_for(".index"))
     
-@employee_page.route("/cancel_work", methods=["POST"])
+@employee_blueprint.route("/cancel_work", methods=["POST"])
 @login_required
 def cancel_work():
     # can only cancel if checked in already
@@ -104,7 +104,7 @@ def cancel_work():
     return redirect(url_for(".index"))
 
 
-@employee_page.route("/finish_work", methods=["POST"])
+@employee_blueprint.route("/finish_work", methods=["POST"])
 @login_required
 def finish_work():
     # TODO add "are you sure pop up box"

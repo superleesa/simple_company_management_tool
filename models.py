@@ -9,3 +9,4 @@ from user import User
 from project import Project
 from contrubution import Contribution
 from project import Project
+from client import Client

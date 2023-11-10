@@ -1,0 +1,250 @@
+{% extends "admin_base.html" %}
+{% block title %}Admin - Add Project{% endblock %}
+{% block stylesheet %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/admin_add_user.css')}}">
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/find_user.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/manager_selector.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <div style="display:flex; justify-content: center; margin-bottom: 20px;margin-top: 20px;"><h2>Add a New Project</h2></div>
+    <div id="main">
+
+        <!-- add conditions for username and password -->
+    <div style="display: flex; justify-content: center">
+        <div style="width: 40%">
+            {% with messages = get_flashed_messages(with_categories=True) %}
+                {% if messages %}
+                    <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <form action="{{ url_for('.add_project') }}" method="POST">
+            <div class="input-container">
+                <label for="clientType" class="textbox-label">Choose client type</label>
+                <div style="display: flex; justify-content: center;">
+                    <select id="clientType">
+                      <option value="new" class="project-type-button">New client</option>
+                      <option value="existing" class="project-type-button">Existing client</option>
+                    </select>
+                </div>
+            </div>
+
+            <!--new client type -> just require a client name -->
+            <div id="newClient" class="input-container">
+              <label for="newClientName" class="textbox-label">Client name</label>
+                <div style="display: flex; justify-content: center;"><input type="text" id="newClientName" class="input-box" name="client-name"></div>
+
+            </div>
+
+            <!--existing client type -> need to choose one client from the existing clients-->
+            <div id="existingClient" style="display: none;" class="input-container">
+                <label for="existingClients">Select an Existing Client</label>
+    {#                <input type="text" id="client-search-input" placeholder="Start by typing in an existing client name...">#}
+                <div style="display: flex; justify-content: center;"><select id="existingClients" name="client-id"></select></div>
+            </div>
+
+            <script>
+                const projectClientType = document.getElementById("clientType");
+                const newClientContainer = document.getElementById("newClient");
+                const existingClientContainer = document.getElementById("existingClient");
+
+                projectClientType.addEventListener("change", () => {
+                    if (projectClientType.value === "new"){
+                        existingClientContainer.style.display = "none";
+                        newClientContainer.style.display = "flex";
+                    }else{
+                        newClientContainer.style.display = "none";
+                        existingClientContainer.style.display = "flex";
+
+                        // fetch existing clients and list them
+                        fetchExistingClients();
+
+                    }
+                })
+
+                function fetchExistingClients(){
+                    fetch('{{ url_for("api.get_client_profiles") }}')
+                        .then(response => response.json())
+                        .then(existingClientsInfo => {
+                            const existingClients = document.getElementById("existingClients");
+
+                            existingClientsInfo.forEach(clientInfo => {
+                                const existingClientOption = document.createElement("option");
+                                existingClientOption.value = clientInfo["id"]
+                                existingClientOption.innerText = clientInfo["name"]
+                                existingClients.appendChild(existingClientOption)
+                            })
+                        })
+                }
+            </script>
+
+
+            <div class="input-container">
+                <label for="manager-search-input">Manager for the project</label>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    <input type="text" id="manager-search-input">
+                    <div id="manager-candidates-container"></div>
+                </div>
+
+                <input type="hidden" id="manager-id-storer" name="manager-id">
+                <script>
+                    const input = document.getElementById("manager-search-input");
+                    const resultList = document.getElementById("manager-candidates-container");
+                    const hiddenManagerIdStorer = document.getElementById("manager-id-storer");
+
+                    // fetch users data async
+                    let users;
+                    fetch('{{ url_for("api.get_user_profile") }}')
+                        .then(response => response.json())
+                        .then(data => {users = data})
+
+
+                    input.addEventListener("input", () => {
+                        findUser(input, resultList, users, false);
+                    })
+
+                    resultList.addEventListener("click", (event) => {
+                        manager_select_handler(event, resultList, hiddenManagerIdStorer);
+
+                    })
+                </script>
+            </div>
+
+            <div class="input-container">
+                <label for="start-date">Project Start Date</label>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    <input type="date" id="start-date" name="start-date">
+                </div>
+            </div>
+
+
+
+
+            <button type="submit">Add Project</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block script %}
+    const verifyPassword = () => {
+        const password1 = document.getElementById("password1").value;
+        const password2Field = document.getElementById("password2");
+        const password2 = password2Field.value;
+
+        if (password1 !== password2){
+            password2Field.classList.add("input-error");
+            console.log("error")
+        }else{
+            password2Field.classList.remove("input-error");
+        }
+
+    }
+{% endblock %}
+{% block style %}
+    #main{
+        padding-bottom: 20px;
+    }
+    form{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+    input{
+        height: 30px;
+        border: solid;
+        border-color: #4bc0c0;
+    }
+
+    label{
+        display:block;
+        width: 300px;
+        font-size: 20px;
+    }
+    .input-box{
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+    .input-wrapper{
+        width: 200px;
+    }
+    button[type="submit"]{
+        height: 50px;
+        width: 200px;
+        background-color: #7dc0c0;
+        border: solid #1e6b6b;
+    }
+    button[type="submit"]:hover{
+        background-color: #166060;
+        cursor: pointer;
+    }
+    .user-box{
+        width: 90%;
+        padding-right: 10px;
+        padding-left: 10px;
+        height:50px;
+        display:flex;
+        justify-content: center;
+        align-items:center;
+        gap:5px;
+        background-color: #e1e3e1;
+        border: solid 1px;
+    }
+    .full-name-span{
+        font-size: 15px;
+        width:25%;
+        text-align: center;
+        overflow: hidden;
+    }
+    .username-span{
+        width:20%;
+        text-align: center;
+        overflow: hidden;
+    }
+    .is-working-span{
+        width:25%;
+        text-align: center;
+        overflow: hidden;
+    }
+    .email-address-span{
+        width:30%;
+        text-align: center;
+        overflow: hidden;
+    }
+    .user-box:hover{
+        background-color: #b8bab8;
+    }
+    .textbox-label{
+        12pt;
+        margin-bottom: 10px;
+    }
+    .input-container{
+        background-color: #dedede;
+        padding: 10px;
+        border: solid 1px transparent;
+        border-radius: 5px;
+        width: 40%;
+    }
+    #manager-candidates-container{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+        max-height: 200px;
+
+    }
+    .selected-manager{
+        background-color: #7a7a7a;
+    }
+
+
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "admin_base.html" %}
+{% block title %}Admin - Add Client{% endblock %}
+{% block stylesheet %}{% endblock %}
+
+{% block body %}
+    <div style="display:flex; justify-content: center; margin-bottom: 20px;margin-top: 20px;"><h2>Add New Client</h2></div>
+    <div id="main">
+
+        <!-- add conditions for username and password -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('.add_client') }}" method="POST">
+            <div class="input-box">
+                <label for="client-name">Client Name</label>
+                <div class="input-wrapper"><input type="text" class="input_box" id="client-name" name="client-name" size="20"></div>
+            </div>
+            <button type="submit">Add User</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block script %}
+    const verifyPassword = () => {
+        const password1 = document.getElementById("password1").value;
+        const password2Field = document.getElementById("password2");
+        const password2 = password2Field.value;
+
+        if (password1 !== password2){
+            password2Field.classList.add("input-error");
+            console.log("error")
+        }else{
+            password2Field.classList.remove("input-error");
+        }
+
+    }
+{% endblock %}
+{% block style %}
+    #main{
+        background-color: #F0F0F0;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+    form{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+    input{
+        height: 30px;
+        border: solid;
+        border-color: #4bc0c0;
+    }
+
+    label{
+        display:block;
+        width: 300px;
+        font-size: 20px;
+    }
+    .input-box{
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+    .input-wrapper{
+        width: 200px;
+    }
+    button[type="submit"]{
+        height: 50px;
+        width: 200px;
+        background-color: #7dc0c0;
+        border: solid #1e6b6b;
+    }
+    button[type="submit"]:hover{
+        background-color: #166060;
+        cursor: pointer;
+    }
+{% endblock %}

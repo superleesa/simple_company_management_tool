@@ -19,6 +19,10 @@ class User(Base, UserMixin):
     
     is_admin = Column(Boolean, nullable=False)
     is_working = Column(Boolean, nullable=False)
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.roles = []
     
     def get_id(self):
         return str(self.id)

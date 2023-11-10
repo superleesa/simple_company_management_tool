@@ -3,6 +3,7 @@
 {% block stylesheet %}<link rel="stylesheet" href="{{ url_for('static', filename='styles/stylesheet3.css') }}">{% endblock %}
 {% block head_script %}
     <script src="https://kit.fontawesome.com/8ea8b0a00c.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/find_user.js') }}"></script>
 {% endblock %}
 {% block username %}{{ current_user.first_name }}{% endblock %}
 {% block body %}
@@ -27,7 +28,14 @@
             {% endfor %}
         </div>
     </div>
-    <script type="text/javascript" src="{{ url_for('static', filename='scripts/find_user.js') }}"></script>
+    <script>
+        const input = document.getElementById("search-input");
+        const resultList = document.getElementById("user-boxes-container");
+
+        input.addEventListener("input", () => {
+            findUser(input, resultList, users);
+        })
+    </script>
 {% endblock %}
 {% block script %}
     const users = {{ users|tojson|safe }};
@@ -80,6 +88,28 @@
 
     tr{
         border-bottom: 1px solid grey;
+    }
+
+    .user-box{
+        width:900px;
+        height:50px;
+        display:flex;
+        justify-content: center;
+        align-items:center;
+        gap:20px;
+    }
+    .full-name-span{
+        font-size: 15px;
+        width:200px;
+    }
+    .username-span{
+        width:150px;
+    }
+    .is-working-span{
+        width:80px;
+    }
+    .email-address-span{
+        width:200px;
     }
 
 {% endblock %}
