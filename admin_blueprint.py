@@ -202,7 +202,7 @@ def add_project():
 
 
     # parse dates
-    start_date = datetime.datetime.strptime(start_date_raw, "%Y-%m-%d").date()
+    start_datetime = datetime.datetime.strptime(start_date_raw, "%Y-%m-%d")
 
 
     if isinstance(client_info, str):
@@ -220,7 +220,7 @@ def add_project():
 
     # add project record
     with Session() as session:
-        session.add(Project(client_id=client_id, manager_id=manager_id, start_date=start_date))
+        session.add(Project(client_id=client_id, manager_id=manager_id, start_datetime=start_datetime))
         session.commit()
 
     flash("Project added successfully", "success")

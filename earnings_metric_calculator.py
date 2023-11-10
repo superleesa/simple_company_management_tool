@@ -91,9 +91,10 @@ class EarningsMetricCalculator(MetricCalculator):
             project_records = (session
                                .query(Project.start_datetime, Project.received_earning_datetime, Project.earnings)
                                .filter(Project.manager_id == worker_id,
-                                       Project.received_earning_datetime != None,  # note: we must use "!=" here
-                                       Project.start_datetime >= self.start_datetime,
+                                       Project.received_earning_datetime != None,  # note: we must use "!=" here (cannot use "is")
+                                       Project.received_earning_datetime >= self.start_datetime,
                                        Project.received_earning_datetime <= self.end_datetime)
                                .all())
+
         return project_records
 

@@ -10,6 +10,6 @@ class Project(Base):
     client_id = Column(ForeignKey("client_table.id"))
     manager_id = Column(ForeignKey("user_table.id"))
     earnings = Column(Integer)
-    start_date = Column(Date, nullable=False)
+    start_datetime = Column(DateTime, nullable=False)
     received_earning_datetime = Column(DateTime)
 

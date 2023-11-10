@@ -69,8 +69,8 @@ if __name__ == "__main__":
         start_datetime = fake.date_time_between(start_date="-1y", end_date="now", tzinfo=None)
         end_datetime = start_datetime + timedelta(days=fake.random_int(min=15, max=365))
 
-        project = Project(client_id=client_id, manager_id=manager_id, earnings=amount, start_date=start_datetime.date(), received_earning_datetime=end_datetime)
-
+        project = Project(client_id=client_id, manager_id=manager_id, earnings=amount, start_datetime=start_datetime, received_earning_datetime=end_datetime)
+        session.add(project)
 
     # generate and insert work records
     for _ in range(num_work_sessions):

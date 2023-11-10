@@ -53,6 +53,9 @@ def get_data():
         mc = WorkHoursMetricCalculator(data_filter, start_month, end_month)
     elif data_required == "earnings":
         mc = EarningsMetricCalculator(data_filter, start_month, end_month)
+    else:
+        # todo: raise error -> unsupported data
+        pass
 
     # per worker or total sum?
     if is_calculation_per_worker:

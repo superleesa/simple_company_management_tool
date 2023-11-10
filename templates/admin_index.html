@@ -35,6 +35,8 @@
 
             <!--card1-->
             <div class="card">
+                <h2 class="card-title">Total Earnings</h2>
+                <canvas id="chart1"></canvas>
                 <div class="data-month-selector">
                     <label for="start-card1">Start month:</label>
                     <input class="startMonth" type="month" id="start-card1" min="{{ min_available_year_and_time }}" />
@@ -42,11 +44,13 @@
                     <input class="endMonth" type="month" id="end-card1" min="{{ min_available_year_and_time }}" />
                     <button id="fetchData1">Load</button>
                 </div>
-                <canvas id="chart1"></canvas>
+
             </div>
 
             <!-- card2 -->
             <div class="card">
+                <h2 class="card-title">Total Working Hours</h2>
+                <canvas id="chart2"></canvas>
                 <div class="data-month-selector">
                     <label for="start-card2">Start month:</label>
                     <input class="startMonth" type="month" id="start-card2" min="{{ min_available_year_and_time }}" />
@@ -54,11 +58,12 @@
                     <input class="endMonth" type="month" id="end-card2" min="{{ min_available_year_and_time }}" />
                     <button id="fetchData2">Load</button>
                 </div>
-                <canvas id="chart2"></canvas>
             </div>
 
             <!-- card3 -->
             <div class="card">
+                <h2 class="card-title">Top n Workers by Earnings</h2>
+                <canvas id="chart3"></canvas>
                 <div class="data-month-selector">
                     <label for="start-card3">Start month:</label>
                     <input class="startMonth" type="month" id="start-card3" min="{{ min_available_year_and_time }}" />
@@ -66,11 +71,13 @@
                     <input class="endMonth" type="month" id="end-card3" min="{{ min_available_year_and_time }}" />
                     <button id="fetchData3">Load</button>
                 </div>
-                <canvas id="chart3"></canvas>
+
             </div>
 
             <!-- card4 -->
             <div class="card">
+                <h2 class="card-title">Top n Workers by Working Hours</h2>
+                <canvas id="chart4"></canvas>
                 <div class="data-month-selector">
                     <label for="start-card4">Start month:</label>
                     <input class="startMonth" type="month" id="start-card4" min="{{ min_available_year_and_time }}" />
@@ -78,7 +85,6 @@
                     <input class="endMonth" type="month" id="end-card4" min="{{ min_available_year_and_time }}" />
                     <button id="fetchData4">Load</button>
                 </div>
-                <canvas id="chart4"></canvas>
             </div>
         </div>
 
@@ -186,6 +192,10 @@
 
     .endMonth{
         margin-right: 20px;
+    }
+
+    .card-title{
+        margin-top: 0px;
     }
 {% endblock %}
 {% block script %}
