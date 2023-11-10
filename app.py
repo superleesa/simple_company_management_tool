@@ -27,16 +27,22 @@ app.register_blueprint(api_blueprint, url_prefix="/api")
 # ===========endpoints========
 @app.route("/")
 def index():
-    return redirect(url_for("login"))
+    if not current_user.is_authenticated:
+        return redirect(url_for("login"))
+
+    if current_user.is_admin:
+        return redirect(url_for("admin.index"))
+    else:
+        return redirect(url_for("employee.index"))
 
 
 # login related
 @login_manager.user_loader
 def load_user(user_id):
     session = Session()
-    employee = session.query(User).filter(User.id == int(user_id)).first()
+    user = session.query(User).filter(User.id == int(user_id)).first()
     session.close()
-    return employee
+    return user
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -51,7 +57,7 @@ def login():
             login_user(possible_user)  # use flask-login's function to log in this user
 
             if possible_user.is_admin:
-                return redirect(url_for("admin.index"))  # todo: create admin.index
+                return redirect(url_for("admin.index"))
             else:
                 # if user is worker: serve worker's landing page
                 return redirect(url_for("employee.index"))

@@ -6,7 +6,7 @@
 
     <script>
         // embed variables
-        const fetch_base_url = "{{ url_for('.get_data') }}"
+        const fetch_base_url = "{{ url_for('api.get_data') }}"
 
         // variables related to the plots
         const earningsMetricValues = {{ whm_hist_all | safe }};

@@ -10,7 +10,7 @@
     <header>
 
         <!-- the left end of the header -->
-        <div id="logo">Logo</div>
+        <a href="{{ url_for('index') }}" style="text-decoration: none; color: black;"><div id="logo">Logo</div></a>
         <div id="nav-var">
             <div class="header-end" id="header-left-end">
                 {% block header_left %}{% endblock %}
@@ -22,7 +22,7 @@
                 <div class="dropdown">
                     <button class="dropdown-button">{% block username %}{% endblock %}</button>
                     <ul class="dropdown-content align-right">
-                        <li><a href="#">Log Out</a></li>
+                        <li><a href="{{ url_for('logout') }}">Log Out</a></li>
                         <li><a href="#">Setting</a></li>
                         <li><a href="#">Another Menu</a></li>
                     </ul>

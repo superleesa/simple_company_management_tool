@@ -1,17 +1,24 @@
 {% extends "base.html" %}
 {% block header_left %}
     <div class="dropdown">
-        <button class="dropdown-button">Check Workers</button>
+        <button class="dropdown-button">Workers</button>
         <ul class="dropdown-content align-left">
             <li><a href="{{ url_for('.show_users') }}">Check Users</a></li>
             <li><a href="{{ url_for('.add_user') }}">Add User</a></li>
         </ul>
     </div>
     <div class="dropdown">
-        <button class="dropdown-button">Check Sales</button>
+        <button class="dropdown-button">Projects</button>
         <ul class="dropdown-content align-left">
-            <li><a href="#">Check Users</a></li>
-            <li><a href="#">Add User</a></li>
+            <li><a href="#">Check Projects</a></li>
+            <li><a href="{{ url_for('admin.add_project') }}">Add Project</a></li>
+        </ul>
+    </div>
+    <div class="dropdown">
+        <button class="dropdown-button">Clients</button>
+        <ul class="dropdown-content align-left">
+            <li><a href="#">Check Clients</a></li>
+            <li><a href="{{ url_for('admin.add_client') }}">Add Client</a></li>
         </ul>
     </div>
 {% endblock %}
