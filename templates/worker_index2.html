@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Worker's Page</title>
+        <script>
+            function recordClickDateTime(elementId){
+                const currentDateTime = new Date().toJSON().slice(0, 19);
+                document.getElementById(elementId).value = currentDateTime;
+            }
+        </script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/stylesheet.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/dashboard.css') }}">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    </head>
+    <body>
+        <h2>Good Morning {{ current_user.first_name }}!</h2>
+
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        {% if has_started_work %}
+            <div class="action-container">
+                <form action="{{ url_for('.finish_work') }}" method="POST">
+                    <input type="hidden" id="end-work" name="end-datetime" value="">
+                    <button type="submit" onclick="recordClickDateTime('end-work')" class="work-status-change-button">Finish Today's Work</button>
+                </form>
+            </div>
+            <div class="action-container">
+                <form action="{{ url_for('.cancel_work') }}" method="POST">
+                    <button type="submit" class="work-status-change-button">Cancel</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="actions-container">
+                <h2>Actions</h2>
+                <div class="action-container">
+
+                    <form class="action-form" action="{{ url_for('.start_work') }}" method="POST">
+                        <input type="hidden" id="start-work" name="start-datetime" value="">
+                        <button type="submit" onclick="recordClickDateTime('start-work')" class="work-status-change-button"><h3>Start Today's Work</h3></button>
+                    </form>
+                </div>
+            </div>
+
+        {% endif %}
+
+        <div id="dashboard-plots">
+
+            <!--card1-->
+            <div class="card">
+                <h2 class="card-title">Total Earnings</h2>
+                <canvas id="chart1"></canvas>
+                <div class="data-month-selector">
+                    <label for="start-card1">Start month:</label>
+                    <input class="startMonth" type="month" id="start-card1" min="{{ min_available_year_and_time }}" />
+                    <label for="end-card1">End month:</label>
+                    <input class="endMonth" type="month" id="end-card1" min="{{ min_available_year_and_time }}" />
+                    <button id="fetchData1">Load</button>
+                </div>
+
+            </div>
+
+            <!-- card2 -->
+            <div class="card">
+                <h2 class="card-title">Total Working Hours</h2>
+                <canvas id="chart2"></canvas>
+                <div class="data-month-selector">
+                    <label for="start-card2">Start month:</label>
+                    <input class="startMonth" type="month" id="start-card2" min="{{ min_available_year_and_time }}" />
+                    <label for="end-card2">End month:</label>
+                    <input class="endMonth" type="month" id="end-card2" min="{{ min_available_year_and_time }}" />
+                    <button id="fetchData2">Load</button>
+                </div>
+            </div>
+
+            <!-- card3 -->
+            <div class="card">
+                <h2 class="card-title">Top n Workers by Earnings</h2>
+                <canvas id="chart3"></canvas>
+                <div class="data-month-selector">
+                    <label for="start-card3">Start month:</label>
+                    <input class="startMonth" type="month" id="start-card3" min="{{ min_available_year_and_time }}" />
+                    <label for="end-card3">End month:</label>
+                    <input class="endMonth" type="month" id="end-card3" min="{{ min_available_year_and_time }}" />
+                    <button id="fetchData3">Load</button>
+                </div>
+
+            </div>
+
+            <!-- card4 -->
+            <div class="card">
+                <h2 class="card-title">Top n Workers by Working Hours</h2>
+                <canvas id="chart4"></canvas>
+                <div class="data-month-selector">
+                    <label for="start-card4">Start month:</label>
+                    <input class="startMonth" type="month" id="start-card4" min="{{ min_available_year_and_time }}" />
+                    <label for="end-card4">End month:</label>
+                    <input class="endMonth" type="month" id="end-card4" min="{{ min_available_year_and_time }}" />
+                    <button id="fetchData4">Load</button>
+                </div>
+            </div>
+        </div>
+
+        <!--populating cards by plots-->
+        <script src="{{ url_for('static', filename='scripts/chart_creation.js') }}"></script>
+        <!--setting default values for data start/end selectors-->
+        <script>
+            // todo add validation to ensure that start date is less than the end date
+
+            // setting startSelectors
+            const currentDate = new Date();
+            const currentMonth = ("0" + (currentDate.getMonth() + 1)).slice(-2);
+            const currentYear = currentDate.getFullYear();
+            const maxMonthValue = `${currentYear}-${currentMonth}`
+
+            const endMonthControls = document.getElementsByClassName("endMonth");
+            Array.from(endMonthControls).forEach(control => {
+                control.value = maxMonthValue;
+                control.max = maxMonthValue;
+            })
+
+            // setting endSelectors
+            const oneMonthBefore = ("0" + (currentDate.getMonth())).slice(-2);
+            const startMonthDefaultValue = `${currentYear}-${oneMonthBefore}`;
+
+            const startMonthControls = document.getElementsByClassName("startMonth");
+            Array.from(startMonthControls).forEach(control => {
+                control.value = startMonthDefaultValue;
+                control.max = maxMonthValue;
+            })
+
+        </script>
+
+        <script>
+            // populate chart1
+            const context1 = document.getElementById('chart1');
+            let dataset = [{
+                label: 'Working Hours per Month',
+                data: earningsMetricValues,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+            populateLineChartWithinAContext(context1, earningsMetricLabels, dataset);
+
+            // populate chart2
+            const context2 = document.getElementById('chart2');
+            const topKDataset = createDatasetForChart(earningsMetricTopKValues, earningsMetricTopKWorkerNames);
+            populateLineChartWithinAContext(context2, earningsMetricTopKLabels, topKDataset);
+
+
+        </script>
+
+        <!-- associate function to the datafetch button-->
+        <script>
+            document.getElementById("fetchData1").addEventListener("click",
+                (event) => fetchData(event, "earnings", "all", false));
+            document.getElementById("fetchData2").addEventListener("click",
+                (event) => fetchData(event, "workingHours", "all", false));
+            document.getElementById("fetchData3").addEventListener("click",
+                (event) => fetchData(event, "earnings", "topk", true));
+            document.getElementById("fetchData4").addEventListener("click",
+                (event) => fetchData(event, "workingHours", "topk", true));
+        </script>
+    </div>
+
+    </body>
+</html>

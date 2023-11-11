@@ -32,7 +32,7 @@ def index():
 
 
 
-    return render_template("worker_page.html",
+    return render_template("worker_index.html",
                            has_started_work=has_started_work_today,
                            work_data=dumps(work_data),
                            sales_data=dumps(sales_data),

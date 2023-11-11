@@ -120,33 +120,14 @@ def index():
     if not current_user.is_admin:
         return "Access denied. You are not an admin."
 
-    # by default, EarningsAmount and WorkedHours of past two months are shown on the index page
-    today = datetime.datetime.now()
-    three_months_before = today - datetime.timedelta(days=60)
 
-
-
-    # retrieve data
-    # total_worked_hours = retrieve_company_work_hours_in_a_timeframe(three_months_before, today)
-    # top_working_hours_workers = get_top_k_worker_data_in_a_timeframe(three_months_before, today, 5)
-
-    whmc_all = WorkHoursMetricCalculator("all", three_months_before, today)
-    whm_hist_all, whm_labels_all = whmc_all.get_sum_workers_metric_in_a_timeframe()
-
-    whmc_top3 = WorkHoursMetricCalculator("topk", three_months_before, today, 3)
-    whm_hist_top3, whm_labels_top3, top3_worker_names = whmc_top3.get_per_worker_metric_in_a_timeframe()
 
     # get year and month of the oldest available data in the database
 
     min_available_year_and_time = get_min_available_year_and_month()
 
     return render_template("admin_index.html",
-                           whm_hist_all=dumps(whm_hist_all),
-                           whm_label_all=dumps(whm_labels_all),
-                           whm_hist_topk=dumps(whm_hist_top3),
-                           whm_label_topk=dumps(whm_labels_top3),
-                           whm_worker_names_topk=dumps(top3_worker_names),
-                           min_available_year_and_time=dumps(min_available_year_and_time)
+                           min_datetime=dumps(min_available_year_and_time)
                            )
 
 @admin_blueprint.route("/test", methods=["GET"])
@@ -188,7 +169,6 @@ def add_project():
         return render_template("admin_add_project.html")
 
     # input validation
-    print(request.form)
     try:
         manager_id = int(request.form["manager-id"])
         client_id = request.form.get("client-id")

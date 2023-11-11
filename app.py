@@ -47,12 +47,12 @@ def load_user(user_id):
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form.get("username")
+        password = request.form.get("password")
 
         # check if a user with given username exists
-        session = Session()
-        possible_user = session.query(User).filter(User.username == username and User.password == password).first()
+        with Session() as session:
+            possible_user = session.query(User).filter(User.username == username and User.password == password).first()
         if possible_user is not None:
             login_user(possible_user)  # use flask-login's function to log in this user
 
@@ -60,6 +60,9 @@ def login():
                 return redirect(url_for("admin.index"))
             else:
                 # if user is worker: serve worker's landing page
+                print("hello mates")
+                print(possible_user)
+                print(current_user)
                 return redirect(url_for("employee.index"))
 
         flash("Incorrect username or pasword")

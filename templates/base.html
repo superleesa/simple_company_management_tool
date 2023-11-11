@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
+    <script src="https://kit.fontawesome.com/8ea8b0a00c.js" crossorigin="anonymous"></script>
     {% block stylesheet %}{% endblock %}
     {% block head_script %}{% endblock %}
 </head>
@@ -20,7 +21,10 @@
             <div class="header-end" id="header-right-end">
                 {% block header_right %}{% endblock %}
                 <div class="dropdown">
-                    <button class="dropdown-button">{% block username %}{% endblock %}</button>
+                    <div style="display: flex; align-items: center; gap: 3px;">
+                        <i class="fa-solid fa-user fa-lg"></i>
+                        <button class="dropdown-button">{% block username %}{% endblock %}</button>
+                    </div>
                     <ul class="dropdown-content align-right">
                         <li><a href="{{ url_for('logout') }}">Log Out</a></li>
                         <li><a href="#">Setting</a></li>

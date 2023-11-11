@@ -30,10 +30,6 @@ def get_data():
     data_filter = request.args.get("dataFilter")
     is_calculation_per_worker = True if request.args.get("isCalculationPerWorker") == "true" else False
 
-    print(data_required)
-    print(data_filter)
-    print(is_calculation_per_worker)
-
     # todo need to support integers / list of integers too
 
     # validation
@@ -63,7 +59,7 @@ def get_data():
     else:
         data = mc.get_sum_workers_metric_in_a_timeframe()
 
-    print(data)
+
     return jsonify(data)
 
 @api_blueprint.route("/user/data", methods=["GET"])
