@@ -11,7 +11,7 @@
     <header>
 
         <!-- the left end of the header -->
-        <a href="{{ url_for('index') }}" style="text-decoration: none; color: black;"><div id="logo">Logo</div></a>
+        <a href="{{ url_for('index') }}" class="link-without-decoration"><div id="logo">Logo</div></a>
         <div id="nav-var">
             <div class="header-end" id="header-left-end">
                 {% block header_left %}{% endblock %}
@@ -21,14 +21,13 @@
             <div class="header-end" id="header-right-end">
                 {% block header_right %}{% endblock %}
                 <div class="dropdown">
-                    <div style="display: flex; align-items: center; gap: 3px;">
+                    <div style="display: flex; align-items: center; gap: 3px; padding: 5px;">
                         <i class="fa-solid fa-user fa-lg"></i>
-                        <button class="dropdown-button">{% block username %}{% endblock %}</button>
+                        <button class="dropdown-button">{{ current_user.first_name }}</button>
                     </div>
                     <ul class="dropdown-content align-right">
-                        <li><a href="{{ url_for('logout') }}">Log Out</a></li>
-                        <li><a href="#">Setting</a></li>
-                        <li><a href="#">Another Menu</a></li>
+                        <li class="li-header"><a href="{{ url_for('logout') }}" class="link-without-decoration">Log Out</a></li>
+                        <li class="li-header"><a href="#" class="link-without-decoration">Setting</a></li>
                     </ul>
                 </div>
             </div>
@@ -69,9 +68,9 @@
     .dropdown-content{
         display: none;
         position: absolute;
+        background-color: white;
 
-
-        border: 1px solid #858585;
+        border: 3px solid #858585;
         border-radius: 0.25rem;
         padding: 0.5rem;
         width: max-content;
@@ -105,13 +104,25 @@
     }
 
     .dropdown:hover{
-        background-color: #dcdcdc;
+        background-color: #888888;
     }
 
     .align-right{
         text-align: right;
         top: 30px;
         right: 0;
+    }
+    .link-without-decoration{
+        text-decoration: none;
+        color: black;
+    }
+
+    .li-header{
+        padding: 3px;
+    }
+
+    .li-header:hover{
+        background-color: #888888;
     }
 
     {% block style %}{% endblock %}

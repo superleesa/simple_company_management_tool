@@ -50,8 +50,7 @@ def get_data():
     elif data_required == "earnings":
         mc = EarningsMetricCalculator(data_filter, start_month, end_month)
     else:
-        # todo: raise error -> unsupported data
-        pass
+        abort(404, "unknown metrics")
 
     # per worker or total sum?
     if is_calculation_per_worker:
@@ -69,7 +68,11 @@ def get_single_user_data():
     if user_id != current_user.id and not current_user.is_admin:
         return "Access denied. You are neither the user of the requested data nor an admin."
 
+    # validation
+    valid_data = ["workingHours", "earnings"]
     data_required = request.args.get("dataRequired")
+    if data_required not in valid_data:
+        abort(404, "requested invalid data type")
 
     # parsing start and end months
     start_month_raw = request.args.get("startMonth")
@@ -88,7 +91,7 @@ def get_single_user_data():
 
     data = mc.get_sum_workers_metric_in_a_timeframe()
 
-    return data
+    return jsonify(data)
 
 @api_blueprint.route("/user/profile", methods=["GET"])
 @login_required

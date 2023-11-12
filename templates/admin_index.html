@@ -43,9 +43,10 @@
     </script>
 
 {% endblock %}
-{% block username %}{{ current_user.first_name }}{% endblock %}
 {% block body %}
     <div id="main">
+        <div>
+            <h2 style="padding-left: 3%;padding-bottom: 10px;">Good Afternoon {{ current_user.first_name }}!</h2>
         <div id="dashboard">
 
             <!--card1-->
@@ -140,7 +141,7 @@
 
         </div>
 
-
+        </div>
 
     </div>
 {% endblock %}
@@ -152,14 +153,13 @@
     #main{
         display: flex;
         justify-content: center;
-        padding-top: 30px;
+        padding-top: 20px;
     }
     #dashboard{
         width: 95%;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        align-items: center;
         gap: 25px;
         margin-bottom: 50px;
     }

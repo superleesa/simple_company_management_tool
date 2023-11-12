@@ -3,22 +3,22 @@
     <div class="dropdown">
         <button class="dropdown-button">Workers</button>
         <ul class="dropdown-content align-left">
-            <li><a href="{{ url_for('.show_users') }}">Check Users</a></li>
-            <li><a href="{{ url_for('.add_user') }}">Add User</a></li>
+            <li class="li-header"><a href="{{ url_for('.show_users') }}" class="link-without-decoration">Check Users</a></li>
+            <li class="li-header"><a href="{{ url_for('.add_user') }}" class="link-without-decoration">Add User</a></li>
         </ul>
     </div>
     <div class="dropdown">
         <button class="dropdown-button">Projects</button>
         <ul class="dropdown-content align-left">
-            <li><a href="#">Check Projects</a></li>
-            <li><a href="{{ url_for('admin.add_project') }}">Add Project</a></li>
+            <li class="li-header"><a href="#" class="link-without-decoration">Check Projects</a></li>
+            <li class="li-header"><a href="{{ url_for('admin.add_project') }}" class="link-without-decoration">Add Project</a></li>
         </ul>
     </div>
     <div class="dropdown">
         <button class="dropdown-button">Clients</button>
         <ul class="dropdown-content align-left">
-            <li><a href="#">Check Clients</a></li>
-            <li><a href="{{ url_for('admin.add_client') }}">Add Client</a></li>
+            <li class="li-header"><a href="#" class="link-without-decoration">Check Clients</a></li>
+            <li class="li-header"><a href="{{ url_for('admin.add_client') }}" class="link-without-decoration">Add Client</a></li>
         </ul>
     </div>
 {% endblock %}

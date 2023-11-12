@@ -1,16 +1,32 @@
-.action-container{
-    /*background-color: aliceblue;*/
-    height: 100px;
+/*.action-container{*/
+/*    !*background-color: aliceblue;*!*/
+/*    height: 150px;*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    width: 40%;*/
+/*    */
+/*}*/
 
+.actions-container{
     display: flex;
+    justify-content: center;
+    width: 40%;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    gap: 20px;
+    background-color: white;
+    padding: 10px;
     align-items: center;
 }
 
 .work-status-change-button{
     height: 50px;
-    width: 200px;
+    /*width: 40%;*/
     background-color: #7dc0c0;
-    border: solid #1e6b6b;
+    font-size: 20px;
+    border: solid 1px transparent;
+    border-radius: 5px;
+    padding: 10px;
 }
 
 .work-status-change-button:hover{
@@ -28,18 +44,4 @@
 
 .input-error{
     border: 1px solid red;
-}
-
-.actions-container{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    gap: 20px;
-}
-
-.action-form{
-
 }

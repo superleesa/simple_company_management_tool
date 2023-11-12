@@ -9,8 +9,8 @@ function getStartAndEndMonthFromClickedButton(clickedButton){
     return [startMonth, endMonth];
 }
 
-function fetchAndPopulateCanvas(canvas, api_url, dataRequired, dataFilter, startMonth, endMonth, isCalculationPerWorker){
-    fetch(api_url +
+function fetchAndPopulateCanvas(canvas, apiURL, dataRequired, dataFilter, startMonth, endMonth, isCalculationPerWorker){
+    fetch(apiURL +
             `?dataRequired=${dataRequired}` +
             `&dataFilter=${dataFilter}` +
             `&startMonth=${startMonth}` +
@@ -51,12 +51,55 @@ function fetchAndPopulateCanvas(canvas, api_url, dataRequired, dataFilter, start
 
 }
 
+function fetchSingleUserDataAndPopulateCanvas(canvas, apiURL, userId, dataRequired, startMonth, endMonth){
+    fetch(apiURL +
+            `?id=${userId}` +
+            `&dataRequired=${dataRequired}` +
+            `&startMonth=${startMonth}` +
+            `&endMonth=${endMonth}`
+    )
+        .then(response => response.json())
+        .then(data => {
+
+            // preprocessing
+            let [rawDatasets, rawLabels] = data;
+            let categories = ["Total Sum"];
+            rawDatasets = [rawDatasets];
+
+            const labels = rawLabels.map(dateString => new Date(dateString));
+            const datasets = createDatasetForChart(rawDatasets, categories);
+
+
+            // update the chart
+            const targetChart = Chart.getChart(canvas);
+            if (targetChart != null){
+                targetChart.destroy();
+            }
+            populateLineChartWithinAContext(canvas, labels, datasets);
+
+
+        })
+        .catch(error => {
+            console.error("Error fetching data:", error);
+        });
+
+}
+
 function refetchData(event, api_url, dataRequired, dataFilter, isCalculationPerWorker){
     const clickedButton = event.target;
     const canvas = getCanvasToUpdateFromClickedButton(clickedButton);
     const [startMonth, endMonth] = getStartAndEndMonthFromClickedButton(clickedButton);
 
     fetchAndPopulateCanvas(canvas, api_url, dataRequired, dataFilter, startMonth, endMonth, isCalculationPerWorker);
+
+}
+
+function refetchSingleUserData(event, apiURL, userId, dataRequired){
+    const clickedButton = event.target;
+    const canvas = getCanvasToUpdateFromClickedButton(clickedButton);
+    const [startMonth, endMonth] = getStartAndEndMonthFromClickedButton(clickedButton);
+
+    fetchSingleUserDataAndPopulateCanvas(canvas, apiURL, userId, dataRequired, startMonth, endMonth);
 
 }
 

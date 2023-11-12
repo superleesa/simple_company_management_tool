@@ -131,22 +131,6 @@
         </form>
     </div>
 {% endblock %}
-
-{% block script %}
-    const verifyPassword = () => {
-        const password1 = document.getElementById("password1").value;
-        const password2Field = document.getElementById("password2");
-        const password2 = password2Field.value;
-
-        if (password1 !== password2){
-            password2Field.classList.add("input-error");
-            console.log("error")
-        }else{
-            password2Field.classList.remove("input-error");
-        }
-
-    }
-{% endblock %}
 {% block style %}
     body{
         background-color: #f0f2f2;

@@ -26,18 +26,23 @@ def index():
     user_id = current_user.id
     has_started_work_today = check_employee_is_working(user_id)
 
-    work_data, sales_data, efficiency_data, total_sales_past_month = retrieve_past_work_data(current_user.id)
+    # work_data, sales_data, efficiency_data, total_sales_past_month = retrieve_past_work_data(current_user.id)
+
+    min_datetime = get_min_available_year_and_month_for_a_user(user_id)
 
 
 
-
-
-    return render_template("worker_index.html",
+    return render_template("worker_index2.html",
                            has_started_work=has_started_work_today,
-                           work_data=dumps(work_data),
-                           sales_data=dumps(sales_data),
-                           efficiency_data=dumps(efficiency_data),
-                           total_sales_past_month=total_sales_past_month)
+                           min_datetime=min_datetime,
+                           user_id=user_id
+                           )
+
+def get_min_available_year_and_month_for_a_user(user_id):
+    with Session() as session:
+        min_datetime_record = session.query(Work.start_datetime).filter(Work.user_id == user_id).order_by().limit(1).first()
+    min_available_year_and_time = min_datetime_record[0]
+    return min_available_year_and_time.date().isoformat()
 
 @employee_blueprint.route("/start_work", methods=["POST"])
 @login_required
