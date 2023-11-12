@@ -7,6 +7,10 @@ import datetime
 
 
 class EarningsMetricCalculator(MetricCalculator):
+    """
+    Note: this metric calculates earnings averages from the project start date to the end date.
+    It is not actual earnings earned on a received date.
+    """
 
     def __init__(self, workers, start_datetime, end_datetime, k=4):
         super().__init__(workers, start_datetime, end_datetime, k)
@@ -92,7 +96,7 @@ class EarningsMetricCalculator(MetricCalculator):
                                .query(Project.start_datetime, Project.received_earning_datetime, Project.earnings)
                                .filter(Project.manager_id == worker_id,
                                        Project.received_earning_datetime != None,  # note: we must use "!=" here (cannot use "is")
-                                       Project.received_earning_datetime >= self.start_datetime,
+                                       Project.start_datetime >= self.start_datetime,
                                        Project.received_earning_datetime <= self.end_datetime)
                                .all())
 

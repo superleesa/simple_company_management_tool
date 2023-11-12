@@ -10,19 +10,31 @@ if __name__ == "__main__":
     fake = Faker()
 
     # ===========PARAMS===========
-    num_employees= 10
-    num_work_sessions = 150
+    num_employees = 10
+    num_work_sessions = 300
     num_clients = 5
-    num_projects = 15
+    num_projects = 100
 
     # insert employees
-    for _ in range(num_employees):
-        username = fake.user_name()
-        password = fake.password()
+    for i in range(num_employees):
+        # ensure that there is always an admin and worker with demo_admin and demo_worker usernames respectively
+        if i == 0:
+            username = "demo_admin"
+            password = "demo_admin"
+            is_admin = True
+        elif i == 1:
+            username = "demo_worker"
+            password = "demo_worker"
+            is_admin = False
+        else:
+            username = fake.user_name()
+            password = fake.password()
+            is_admin = fake.boolean(chance_of_getting_true=20)  # 20% chance of being an admin
+
         first_name = fake.first_name()
         last_name = fake.last_name()
         email_address = fake.email()
-        is_admin = fake.boolean(chance_of_getting_true=20)  # 20% chance of being an admin
+
         is_working = fake.boolean(chance_of_getting_true=80)  # 80% chance of being "working"
 
         # Create a User instance with the generated data
@@ -58,7 +70,6 @@ if __name__ == "__main__":
 
 
     # generate and insert project records
-    # Create Sales and Work instances
     for _ in range(num_projects):
         # select a random client and manager
         manager_id = fake.random_element(elements=user_ids)

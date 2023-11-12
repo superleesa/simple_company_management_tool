@@ -118,6 +118,9 @@ class MetricCalculator(ABC):
 
             # update the date_to_work_hours
             date_index = self._get_date_index(current_datetime)
+            print("length of metric history", len(metric_history))
+            print(current_datetime, self.start_datetime)
+            print("date_index", date_index)
             metric_history[date_index] += earnings_on_this_day
 
             # move to the next day
